@@ -1,10 +1,12 @@
+import Spinner from "../../ui/Spinner";
 import { useBlogs } from "./useBlogs";
 
 function BlogsData() {
-  // const { data, error, isLoading } = useBlogs();
-  // console.log(error);
+  const { blogs, isLoading } = useBlogs();
 
-  // if (isLoading) return <h1>Loading...</h1>;
+  // console.log(blogs);
+
+  if (isLoading) return <Spinner />;
   return <div>s</div>;
 }
 
