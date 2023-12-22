@@ -3,6 +3,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
 import Dashboard from "./pages/Dashboard";
+import CreateBlog from "./pages/CreateBlog";
+import ProtectedRoutes from "./ui/ProtectedRoutes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,6 +23,14 @@ function App() {
             \
             <Route index element={<Dashboard />} />
           </Route>
+          <Route
+            path="/createblog"
+            element={
+              <ProtectedRoutes>
+                <CreateBlog />
+              </ProtectedRoutes>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

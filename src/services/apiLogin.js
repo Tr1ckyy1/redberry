@@ -4,14 +4,11 @@ export async function login(email) {
   const res = await fetch(`${API}/login`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${TOKEN}`,
+      accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ email }),
   });
-  console.log(res);
-    if (!res.ok) throw new Error("Invalid email");
-
-//   const data = await res.json();
-//   console.log(data);
-//   return data;
+  if (!res.ok) throw new Error("ელ-ფოსტა არ მოიძებნა");
+  if (!localStorage.getItem("token")) localStorage.setItem("token", TOKEN);
 }

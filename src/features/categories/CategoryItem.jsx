@@ -21,7 +21,7 @@ function CategoryItem({ category }) {
         color: text_color,
         background: `${background_color}`,
       }}
-      className={`cursor-pointer whitespace-nowrap rounded-full border-none px-4 py-2 outline-none ${
+      className={`cursor-pointer whitespace-nowrap rounded-full border-none px-4 py-2 outline-none duration-100 hover:brightness-95   ${
         searchParams.get(`id${id}`) && "ring-2 ring-black"
       }`}
       onClick={() => categoryClicked(id, title)}
