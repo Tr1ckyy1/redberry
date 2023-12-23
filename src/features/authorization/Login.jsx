@@ -2,23 +2,26 @@ import { MdOutlineClose } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import useLogin from "./useLogin";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 function Login({ closeModal }) {
+  const [success, setSuccess] = useState(false);
   const { register, handleSubmit, formState, setError } = useForm();
 
-  const { errors, isSubmitSuccessful } = formState;
+  const { errors } = formState;
 
   const { login } = useLogin();
 
   function onSubmit(data) {
     login(data.email, {
+      onSuccess: () => setSuccess(true),
       onError: (err) => setError("email", { message: err.message }),
     });
   }
 
   return (
     <div className="absolute inset-0 flex h-screen w-full items-center justify-center bg-black/20">
-      {isSubmitSuccessful ? (
+      {success ? (
         <div className="h-[300px] w-[480px] gap-10 rounded-xl bg-white p-6 shadow-lg">
           <div
             onClick={closeModal}
