@@ -12,13 +12,15 @@ function CreateBlogForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, dirtyFields },
     getValues,
     watch,
   } = useForm({
     mode: "onChange",
   });
+
   const imageRef = useRef(null);
+
   const { ref, ...rest } = register("image", {
     required: "სურათი სავალდებულოა",
     validate: (value) =>
@@ -26,15 +28,17 @@ function CreateBlogForm() {
   });
 
   function onSubmit(data) {
-    console.log(getValues().image[0].name.split("."));
+    // console.log(isDirty);
+    // console.log(isValid);
+    console.log(dirtyFields);
   }
 
   function onError(err) {
-    // console.log(getValues().image[0].name.split("."));
+    console.log(err);
   }
 
   return (
-    <div className="flex px-16 py-8">
+    <div className="flex px-20 py-8">
       <div
         onClick={() => navigate(-1)}
         className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-[#E4E3EB] duration-100 hover:bg-[#D9D8E0]"
@@ -43,13 +47,13 @@ function CreateBlogForm() {
       </div>
       <form
         onSubmit={handleSubmit(onSubmit, onError)}
-        className="mx-auto flex w-[600px] flex-col gap-10"
+        className="ml-[25%] flex w-[41.6%] flex-col gap-10"
       >
         <div>
           <h1 className="text-4xl  font-extrabold">ბლოგის დამატება</h1>
           <h1 className="mb-3 mt-10 font-bold">ატვირთეთ ფოტო</h1>
           {!errors?.image?.message && getValues()?.image?.length > 0 ? (
-            <div className="mt-4 flex h-14  w-full items-center gap-2 rounded-xl bg-[#F4F3FF] px-4 duration-100 hover:bg-[#F1EFFB] ">
+            <div className="mt-4 flex h-14  w-full items-center gap-2 rounded-xl bg-[#F4F3FF] px-4 duration-100 hover:bg-[#F1EFFB]">
               <img src="../.././public/gallery.jpg" />
               {/* If image's name length exceeds MAX_NUM_CHARACTERS, show up to MAX_NUM_CHARACTERS, otherise show full name of the image*/}
               <p>
@@ -102,27 +106,31 @@ function CreateBlogForm() {
             <p className="mt-2 text-[#EA1919]">{errors?.image?.message}</p>
           )}
         </div>
-        <input
-          type="text"
-          placeholder="blabla"
-          className="border-4 border-blue-400 bg-red-400"
-          {...register("bla", {
-            required: "ეს ველი საჭიროა",
-          })}
-        />
-        {errors?.bla?.message && (
-          <p className="text-red-400">{errors?.bla?.message}</p>
-        )}
-        {/* <div className="flex gap-10">
+
+        <div className="flex gap-10">
           <div className="flex w-1/2 flex-col gap-3">
-            <h1 htmlFor="author" className="font-bold">
-              ავტორი *
-            </h1>
+            <h1 className="font-bold">ავტორი *</h1>
             <input
+              {...register("author", {
+                required: "ეს ველი სავალდებულოა",
+                minLength: {},
+                validate: (value) =>
+                  value.replaceAll(" ", "").length >= 4 || "min 4",
+              })}
               type="text"
-              className="placeholer:text-[#E4E3EB] rounded-xl border bg-[#FCFCFD] px-4 py-2 outline-none"
+              className={`${
+                // dirtyFields.author && !errors.author
+                // ? "border-[#14D81C] bg-[#FCFCFD]"
+                // :
+                errors?.author
+                  ? "border-[#EA1919] bg-[#EA1919]/10"
+                  : "bg-[#FCFCFD]"
+              } placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB]  px-4 py-2 outline-none focus:border-[#5D37F3] focus:bg-[#FCFCFD]`}
               placeholder="შეიყვანეთ ავტორი"
             />
+            {errors?.author?.message && (
+              <p className="text-sm text-[#EA1919]">{errors.author.message}</p>
+            )}
             <div className="flex text-sm text-[#85858D]">
               <PiDotOutlineFill />
               <p>მინიმუმ 4 სიმბოლო</p>
@@ -137,60 +145,76 @@ function CreateBlogForm() {
             </div>
           </div>
           <div className="flex w-1/2 flex-col gap-3">
-            <h1 htmlFor="title" className="font-bold">
-              სათაური *
-            </h1>
+            <h1 className="font-bold">სათაური *</h1>
             <input
+              {...register("title", {
+                required: "ეს ველი სავალდებულოა",
+                minLength: 4,
+              })}
               type="text"
-              className="placeholer:text-[#E4E3EB] rounded-xl border bg-[#FCFCFD] px-4 py-2 outline-none"
+              className={`placeholer:text-[#E4E3EB] $ rounded-xl  border border-[#E4E3EB]  px-4 py-2 outline-none focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
+                dirtyFields.title && !errors.title
+                  ? "border-[#14D81C] bg-[#FCFCFD]"
+                  : errors?.title
+                    ? "border-[#EA1919] bg-[#EA1919]/10"
+                    : "bg-[#FCFCFD]"
+              }`}
               placeholder="შეიყვანეთ სათაური"
             />
-            <p className="text-sm text-[#85858D]">მინიმუმ 2 სიმბოლო</p>
+            {errors?.title?.message && (
+              <p className="text-sm text-[#EA1919]">{errors.title.message}</p>
+            )}
+            <p
+              className={`text-sm text-[#85858D] ${
+                errors?.title && "text-[#EA1919]"
+              }`}
+            >
+              მინიმუმ 4 სიმბოლო
+            </p>
           </div>
         </div>
-        <div className="flex flex-col gap-3">
-          <h1 htmlFor="author" className="font-bold">
+        {/* <div className="flex flex-col gap-3">
+          <h1  className="font-bold">
             აღწერა *
           </h1>
           <textarea
             type="text"
-            className="placeholer:text-[#E4E3EB] h-[124px] resize-none rounded-xl border bg-[#FCFCFD] px-4 py-2 outline-none"
+            className="placeholer:text-[#E4E3EB] h-[124px] resize-none rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
             placeholder="შეიყვანეთ აღწერა"
           />
           <p className="text-sm text-[#85858D]">მინიმუმ 2 სიმბოლო</p>
         </div>
         <div className="flex gap-6">
           <div className="flex w-1/2 flex-col gap-3">
-            <h1 htmlFor="author" className="font-bold">
+            <h1  className="font-bold">
               გამოქვეყნების თარიღი *
             </h1>
             <input
               type="date"
-              className="placeholer:text-[#E4E3EB] rounded-xl border bg-[#FCFCFD] px-4 py-2 outline-none"
+              className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
             />
           </div>
           <div className="flex w-1/2 flex-col gap-3">
-            <h1 htmlFor="title" className="font-bold">
+            <h1  className="font-bold">
               კატეგორია *
             </h1>
             <input
               type="text"
-              className="placeholer:text-[#E4E3EB] rounded-xl border bg-[#FCFCFD] px-4 py-2 outline-none"
+              className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
               placeholder="შეიყვანეთ სათაური"
             />
           </div>
         </div>
         <div className="flex w-1/2 flex-col gap-3">
-          <h1 htmlFor="title" className="font-bold">
+          <h1  className="font-bold">
             ელ-ფოსტა
           </h1>
           <input
             type="text"
-            className="placeholer:text-[#E4E3EB] w-[288px] rounded-xl border bg-[#FCFCFD] px-4 py-2 outline-none"
+            className="placeholer:text-[#E4E3EB] w-[95%] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
             placeholder="Example@redberry.ge"
           />
         </div> */}
-        {/* After the image is uploaded, render this instead of the top one with file's text and gallery icon */}
 
         <button
           // className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"

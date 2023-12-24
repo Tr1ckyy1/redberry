@@ -27,7 +27,7 @@ function Header() {
             to="/createblog"
             className="rounded-lg bg-[#5D37F3] px-5 py-2.5 text-white hover:brightness-95"
           >
-            ბლოგების დამატება
+            დაამატე ბლოგი
           </Link>
           <button
             onClick={logOut}
