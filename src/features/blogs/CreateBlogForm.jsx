@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { PiDotOutlineFill } from "react-icons/pi";
 import { useRef } from "react";
 import { useCategories } from "../categories/useCategories";
+import CategoryItem from "../categories/CategoryItem";
 
 const MAX_NUM_CHARACTERS = 50;
 
@@ -52,7 +53,6 @@ function CreateBlogForm() {
   }
 
   function onError(err) {
-    // console.log(dirtyFields);
     console.log(err);
   }
 
@@ -257,11 +257,31 @@ function CreateBlogForm() {
           </div>
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">კატეგორია *</h1>
-            <input
+            <div className="relative flex h-full w-full items-center justify-between rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] py-2">
+              <p className="px-4 text-[#85858D]">აირჩიეთ კატეგორია</p>
+              <div className="pr-4">
+                <IoIosArrowDown className="text-2xl text-[#292D32]" />
+              </div>
+              <ul className="absolute top-10 flex h-28 w-full flex-wrap gap-2 overflow-x-hidden overflow-y-scroll bg-black/10 p-2 ">
+                {categories?.map((category) => (
+                  <li
+                    style={{
+                      color: category.text_color,
+                      background: category.background_color,
+                    }}
+                    className="w-fit cursor-pointer whitespace-nowrap rounded-full border-none px-4 py-2 outline-none duration-100 hover:brightness-95   "
+                    key={category.id}
+                  >
+                    {category.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* <input
               type="text"
               className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
               placeholder="შეიყვანეთ სათაური"
-            />
+            /> */}
           </div>
         </div>
 
