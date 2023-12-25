@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { PiDotOutlineFill } from "react-icons/pi";
 import { useRef } from "react";
 import { useCategories } from "../categories/useCategories";
-import CategoryItem from "../categories/CategoryItem";
 
 const MAX_NUM_CHARACTERS = 50;
 
