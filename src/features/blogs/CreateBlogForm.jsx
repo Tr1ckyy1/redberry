@@ -3,22 +3,23 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { PiDotOutlineFill } from "react-icons/pi";
 import { useRef } from "react";
+import { useCategories } from "../categories/useCategories";
 
 const MAX_NUM_CHARACTERS = 50;
 
 function CreateBlogForm() {
-  const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
     formState: { errors, isValid, dirtyFields },
     getValues,
     watch,
+    setError,
   } = useForm({
     mode: "onChange",
   });
-
+  const { categories, isLoading } = useCategories();
+  const navigate = useNavigate();
   const imageRef = useRef(null);
 
   const { ref, ...rest } = register("image", {
@@ -27,6 +28,23 @@ function CreateBlogForm() {
       value[0]?.type?.startsWith("image") || "ფაილი უნდა იყოს სურათი",
   });
 
+  const { onChange, ...inpRest } = register("dda", {
+    required: "ეს ველი სავალდებულოა",
+    minLength: {
+      value: 10,
+      message: "should be at least 10 characters",
+    },
+    pattern: {
+      value: /^[\w-\.]+@redberry.ge$/g,
+      message: "უნდა მთავრდებოდეს @redberry.ge-თ",
+    },
+    validate: (value) => value === "asd" || "err",
+
+    // value.replaceAll(" ", "").length >= 4 || "bla",
+  });
+
+  function stuff() {}
+
   function onSubmit(data) {
     // console.log(isDirty);
     // console.log(isValid);
@@ -34,11 +52,12 @@ function CreateBlogForm() {
   }
 
   function onError(err) {
+    // console.log(dirtyFields);
     console.log(err);
   }
 
   return (
-    <div className="flex px-20 py-8">
+    <div className="flex px-14 py-10">
       <div
         onClick={() => navigate(-1)}
         className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-[#E4E3EB] duration-100 hover:bg-[#D9D8E0]"
@@ -113,27 +132,44 @@ function CreateBlogForm() {
             <input
               {...register("author", {
                 required: "ეს ველი სავალდებულოა",
-                minLength: {},
-                validate: (value) =>
-                  value.replaceAll(" ", "").length >= 4 || "min 4",
+                // minLength: {
+                //   value: 10,
+                //   message: "should be at least 10 characters",
+                // },
+                // pattern: {
+                //   value: /^[\w-\.]+@redberry.ge$/g,
+                //   message: "უნდა მთავრდებოდეს @redberry.ge-თ",
+                // },
+                // validate: (value) => value === "asd" || "err",
+
+                // value.replaceAll(" ", "").length >= 4 || "bla",
               })}
               type="text"
               className={`${
-                // dirtyFields.author && !errors.author
-                // ? "border-[#14D81C] bg-[#FCFCFD]"
-                // :
-                errors?.author
-                  ? "border-[#EA1919] bg-[#EA1919]/10"
-                  : "bg-[#FCFCFD]"
+                dirtyFields.author && !errors.author
+                  ? "border-[#14D81C] bg-[#FCFCFD]"
+                  : errors?.author
+                    ? "border-[#EA1919] bg-[#EA1919]/10"
+                    : "bg-[#FCFCFD]"
               } placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB]  px-4 py-2 outline-none focus:border-[#5D37F3] focus:bg-[#FCFCFD]`}
               placeholder="შეიყვანეთ ავტორი"
             />
-            {errors?.author?.message && (
+            {errors?.author?.message && errors?.author?.type === "required" && (
               <p className="text-sm text-[#EA1919]">{errors.author.message}</p>
             )}
-            <div className="flex text-sm text-[#85858D]">
+            <div className={"flex text-sm text-[#85858D]"}>
               <PiDotOutlineFill />
-              <p>მინიმუმ 4 სიმბოლო</p>
+              <p
+                className={`${
+                  dirtyFields.author && !errors.author
+                    ? "text-[#14D81C]"
+                    : errors?.author?.message
+                      ? "text-[#EA1919]"
+                      : "text-[#85858D]"
+                }`}
+              >
+                მინიმუმ 4 სიმბოლო
+              </p>
             </div>
             <div className="flex text-sm text-[#85858D]">
               <PiDotOutlineFill />
@@ -149,7 +185,7 @@ function CreateBlogForm() {
             <input
               {...register("title", {
                 required: "ეს ველი სავალდებულოა",
-                minLength: 4,
+                validate: (value) => value.replaceAll(" ", "").length >= 2,
               })}
               type="text"
               className={`placeholer:text-[#E4E3EB] $ rounded-xl  border border-[#E4E3EB]  px-4 py-2 outline-none focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
@@ -165,39 +201,62 @@ function CreateBlogForm() {
               <p className="text-sm text-[#EA1919]">{errors.title.message}</p>
             )}
             <p
-              className={`text-sm text-[#85858D] ${
-                errors?.title && "text-[#EA1919]"
-              }`}
+              className={`text-sm ${
+                dirtyFields.title && !errors.title
+                  ? "text-[#14D81C]"
+                  : errors?.title
+                    ? "text-[#EA1919]"
+                    : "text-[#85858D]"
+              } `}
             >
-              მინიმუმ 4 სიმბოლო
+              მინიმუმ 2 სიმბოლო
             </p>
           </div>
         </div>
-        {/* <div className="flex flex-col gap-3">
-          <h1  className="font-bold">
-            აღწერა *
-          </h1>
+        <div className="flex flex-col gap-3">
+          <h1 className="font-bold">აღწერა *</h1>
           <textarea
+            {...register("description", {
+              required: "ეს ველი სავალდებულოა",
+              validate: (value) => value.replaceAll(" ", "").length >= 2,
+            })}
             type="text"
-            className="placeholer:text-[#E4E3EB] h-[124px] resize-none rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
+            className={`focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
+              dirtyFields.description && !errors.description
+                ? "border-[#14D81C] bg-[#FCFCFD]"
+                : errors?.description
+                  ? "border-[#EA1919] bg-[#EA1919]/10"
+                  : "bg-[#FCFCFD]"
+            } placeholer:text-[#E4E3EB] h-[124px] resize-none rounded-xl border border-[#E4E3EB] px-4 py-2 outline-none`}
             placeholder="შეიყვანეთ აღწერა"
           />
-          <p className="text-sm text-[#85858D]">მინიმუმ 2 სიმბოლო</p>
+          {errors?.description?.message && (
+            <p className="text-sm text-[#EA1919]">
+              {errors.description.message}
+            </p>
+          )}
+          <p
+            className={`text-sm  ${
+              dirtyFields.description && !errors.description
+                ? "text-[#14D81C]"
+                : errors?.description
+                  ? "text-[#EA1919]"
+                  : "text-[#85858D]"
+            }`}
+          >
+            მინიმუმ 2 სიმბოლო
+          </p>
         </div>
         <div className="flex gap-6">
           <div className="flex w-1/2 flex-col gap-3">
-            <h1  className="font-bold">
-              გამოქვეყნების თარიღი *
-            </h1>
+            <h1 className="font-bold">გამოქვეყნების თარიღი *</h1>
             <input
               type="date"
               className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
             />
           </div>
           <div className="flex w-1/2 flex-col gap-3">
-            <h1  className="font-bold">
-              კატეგორია *
-            </h1>
+            <h1 className="font-bold">კატეგორია *</h1>
             <input
               type="text"
               className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
@@ -205,16 +264,31 @@ function CreateBlogForm() {
             />
           </div>
         </div>
+
         <div className="flex w-1/2 flex-col gap-3">
-          <h1  className="font-bold">
-            ელ-ფოსტა
-          </h1>
+          <h1 className="font-bold">ელ-ფოსტა</h1>
           <input
+            {...register("email", {
+              required: "სავალდებულო ველი",
+              pattern: {
+                value: /^[\w-\.]+@redberry.ge$/g,
+                message: "უნდა მთავრდებოდეს @redberry.ge-თ",
+              },
+            })}
             type="text"
-            className="placeholer:text-[#E4E3EB] w-[95%] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
+            className={`focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
+              dirtyFields.email && !errors.email
+                ? "border-[#14D81C] bg-[#FCFCFD]"
+                : errors?.email
+                  ? "border-[#EA1919] bg-[#EA1919]/10"
+                  : "bg-[#FCFCFD]"
+            } placeholer:Example@redberry.ge rounded-xl border border-[#E4E3EB] px-4 py-2 outline-none`}
             placeholder="Example@redberry.ge"
           />
-        </div> */}
+          {errors?.email?.message && (
+            <p className="text-sm text-[#EA1919]">{errors.email.message}</p>
+          )}
+        </div>
 
         <button
           // className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"
@@ -222,12 +296,6 @@ function CreateBlogForm() {
         >
           გამოქვეყნება
         </button>
-        {/* <button
-          className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"
-          type="submit"
-        >
-          გამოქვეყნება
-        </button> */}
       </form>
     </div>
   );

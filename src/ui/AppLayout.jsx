@@ -5,7 +5,7 @@ function AppLayout() {
   return (
     <>
       <Header />
-      <main className="px-14">
+      <main className="px-14 py-10">
         <Outlet />
       </main>
     </>

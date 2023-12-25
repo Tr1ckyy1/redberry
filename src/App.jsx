@@ -5,6 +5,7 @@ import AppLayout from "./ui/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import CreateBlog from "./pages/CreateBlog";
 import ProtectedRoutes from "./ui/ProtectedRoutes";
+import BlogPage from "./pages/BlogPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,8 +21,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AppLayout />}>
-            \
             <Route index element={<Dashboard />} />
+            <Route path="blogs/:blogId" element={<BlogPage />} />
           </Route>
           <Route
             path="/createblog"
