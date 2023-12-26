@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { PiDotOutlineFill } from "react-icons/pi";
 import { useRef } from "react";
 import { useCategories } from "../categories/useCategories";
+import { IoCloseOutline } from "react-icons/io5";
 
 const MAX_NUM_CHARACTERS = 50;
 
@@ -71,20 +72,25 @@ function CreateBlogForm() {
           <h1 className="text-4xl  font-extrabold">ბლოგის დამატება</h1>
           <h1 className="mb-3 mt-10 font-bold">ატვირთეთ ფოტო</h1>
           {!errors?.image?.message && getValues()?.image?.length > 0 ? (
-            <div className="mt-4 flex h-14  w-full items-center gap-2 rounded-xl bg-[#F4F3FF] px-4 duration-100 hover:bg-[#F1EFFB]">
-              <img src="../.././public/gallery.jpg" />
-              {/* If image's name length exceeds MAX_NUM_CHARACTERS, show up to MAX_NUM_CHARACTERS, otherise show full name of the image*/}
-              <p>
-                {getValues().image[0].name.replaceAll(" ", "").split(".")[0]
-                  .length > MAX_NUM_CHARACTERS
-                  ? `${getValues()
-                      .image[0].name.replaceAll(" ", "")
-                      .split(".")[0]
-                      .slice(0, MAX_NUM_CHARACTERS)}...${
-                      getValues().image[0].name.split(".")[1]
-                    }`
-                  : getValues().image[0].name.replaceAll(" ", "")}
-              </p>
+            <div className="mt-4 flex h-14 w-full items-center justify-between  rounded-xl bg-[#F4F3FF] px-4 duration-100 hover:bg-[#F1EFFB]">
+              <div className="flex items-center gap-2">
+                <img src="../.././public/gallery.jpg" />
+                {/* If image's name length exceeds MAX_NUM_CHARACTERS, show up to MAX_NUM_CHARACTERS, otherise show full name of the image*/}
+                <p>
+                  {getValues().image[0].name.replaceAll(" ", "").split(".")[0]
+                    .length > MAX_NUM_CHARACTERS
+                    ? `${getValues()
+                        .image[0].name.replaceAll(" ", "")
+                        .split(".")[0]
+                        .slice(0, MAX_NUM_CHARACTERS)}...${
+                        getValues().image[0].name.split(".")[1]
+                      }`
+                    : getValues().image[0].name.replaceAll(" ", "")}
+                </p>
+              </div>
+              <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]">
+                <IoCloseOutline className="text-2xl text-[#1A1A1F]" />
+              </div>
             </div>
           ) : (
             <div
