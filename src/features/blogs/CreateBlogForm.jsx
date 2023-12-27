@@ -55,20 +55,29 @@ function CreateBlogForm() {
   });
 
   function onSubmit(data) {
-    createBlog({
-      title: "asd asd",
-      description:
-        "testing123 so lets make up a story of how we found out that this button works like this and also \n \n \n this needed to be done too",
-      image: data.image[0],
-      author: "გელა გელაშვილი",
-      publish_date: "2023-12-26",
-      categories: "[14]",
-      email: "blabla@redberry.ge",
-    });
+    console.log(data);
+    // createBlog({
+    //   title: "asd asd",
+    //   description:
+    //     "testing123 so lets make up a story of how we found out that this button works like this and also \n \n \n this needed to be done too",
+    //   image: data.image[0],
+    //   author: "გელა გელაშვილი",
+    //   publish_date: "2023-12-26",
+    //   categories: "[14]",
+    //   email: "blabla@redberry.ge",
+    // });
     // console.log(isDirty);
     // console.log(isValid);
     // console.log(dirtyFields);
-    // console.log(data);
+    // const dateString = String(data.date);
+    // // Split the date assuming it's in 'YYYY-MM-DD' format
+    // const parts = dateString.split("-");
+    // if (parts.length === 3) {
+    //   // Rearrange the date parts to 'DD/MM/YYYY' format
+    //   const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    //   // Update the data with the formatted date
+    //   data.date = formattedDate;
+    // }
   }
 
   function onError(err) {
@@ -116,8 +125,10 @@ function CreateBlogForm() {
             </div>
           ) : (
             <div
-              className={`h-[200px]  rounded-xl border border-dashed  bg-[#F4F3FF] p-10 duration-100 hover:bg-[#F1EFFB] ${
-                errors.image ? "border-[#EA1919]" : "border-[#85858D]"
+              className={`h-[200px]  rounded-xl border border-dashed  p-10 duration-100  ${
+                errors.image
+                  ? "border-[#EA1919] bg-[#EA1919]/10"
+                  : "border-[#85858D]  bg-[#F4F3FF] hover:bg-[#F1EFFB]"
               }`}
             >
               <div
@@ -152,30 +163,19 @@ function CreateBlogForm() {
             <p className="mt-2 text-[#EA1919]">{errors?.image?.message}</p>
           )}
         </div>
-        {/* <div className="flex gap-6">
-          <div className="flex w-1/2 flex-col gap-3">
-            <h1 className="font-bold">გამოქვეყნების თარიღი *</h1>
-            <input
-              {...register("date")}
-              type="date"
-              className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
-            />
-          </div>
-        </div> */}
-        {/* DATE */}
-        {/* <div className="flex gap-10">
+        <div className="flex gap-10">
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">ავტორი *</h1>
             <input
-              {...register("author")}
+              {...register("author", { required: "bl;a" })}
               type="text"
               className={`${
                 dirtyFields.author && !errors.author
-                  ? "border-[#14D81C] bg-[#FCFCFD]"
+                  ? "border-[#14D81C] bg-[#14D81C]/10"
                   : errors?.author
                     ? "border-[#EA1919] bg-[#EA1919]/10"
-                    : "bg-[#FCFCFD]"
-              } placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB]  px-4 py-2 outline-none focus:border-[#5D37F3] focus:bg-[#FCFCFD]`}
+                    : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3] "
+              } placeholer:text-[#E4E3EB] rounded-xl border  px-4 py-2 outline-none `}
               placeholder="შეიყვანეთ ავტორი"
             />
             {errors?.author?.message && errors?.author?.type === "required" && (
@@ -212,12 +212,12 @@ function CreateBlogForm() {
                 validate: (value) => value.replaceAll(" ", "").length >= 2,
               })}
               type="text"
-              className={`placeholer:text-[#E4E3EB] $ rounded-xl  border border-[#E4E3EB]  px-4 py-2 outline-none focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
+              className={`placeholer:text-[#E4E3EB] $ rounded-xl  border   px-4 py-2 outline-none ${
                 dirtyFields.title && !errors.title
-                  ? "border-[#14D81C] bg-[#FCFCFD]"
+                  ? "border-[#14D81C] bg-[#14D81C]/10"
                   : errors?.title
                     ? "border-[#EA1919] bg-[#EA1919]/10"
-                    : "bg-[#FCFCFD]"
+                    : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3]"
               }`}
               placeholder="შეიყვანეთ სათაური"
             />
@@ -245,13 +245,13 @@ function CreateBlogForm() {
               validate: (value) => value.replaceAll(" ", "").length >= 2,
             })}
             type="text"
-            className={`focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
+            className={` ${
               dirtyFields.description && !errors.description
-                ? "border-[#14D81C] bg-[#FCFCFD]"
+                ? "border-[#14D81C] bg-[#14D81C]/10"
                 : errors?.description
                   ? "border-[#EA1919] bg-[#EA1919]/10"
-                  : "bg-[#FCFCFD]"
-            } placeholer:text-[#E4E3EB] h-[124px] resize-none rounded-xl border border-[#E4E3EB] px-4 py-2 outline-none`}
+                  : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3]"
+            } placeholer:text-[#E4E3EB] h-[124px] resize-none rounded-xl border  px-4 py-2 outline-none`}
             placeholder="შეიყვანეთ აღწერა"
           />
           {errors?.description?.message && (
@@ -275,9 +275,19 @@ function CreateBlogForm() {
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">გამოქვეყნების თარიღი *</h1>
             <input
+              {...register("date", { required: "ეს ველი სავალდებულოა" })}
               type="date"
-              className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
+              className={`placeholer:text-[#E4E3EB] rounded-xl border  px-4 py-2 outline-none ${
+                dirtyFields.date && !errors.date
+                  ? "border-[#14D81C] bg-[#14D81C]/10"
+                  : errors?.date
+                    ? "border-[#EA1919] bg-[#EA1919]/10"
+                    : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3]"
+              }`}
             />
+            {errors?.date?.message && (
+              <p className="text-sm text-[#EA1919]">{errors.date.message}</p>
+            )}
           </div>
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">კატეგორია *</h1>
@@ -301,38 +311,31 @@ function CreateBlogForm() {
                 ))}
               </ul>
             </div>
-            {/* <input
-              type="text"
-              className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
-              placeholder="შეიყვანეთ სათაური"
-            /> */}
-        {/* </div>
+          </div>
         </div>
-
         <div className="flex w-1/2 flex-col gap-3">
           <h1 className="font-bold">ელ-ფოსტა</h1>
           <input
             {...register("email", {
-              required: "სავალდებულო ველი",
               pattern: {
                 value: /^[\w-\.]+@redberry.ge$/g,
                 message: "უნდა მთავრდებოდეს @redberry.ge-თ",
               },
             })}
             type="text"
-            className={`focus:border-[#5D37F3] focus:bg-[#FCFCFD] ${
+            className={`${
               dirtyFields.email && !errors.email
-                ? "border-[#14D81C] bg-[#FCFCFD]"
+                ? "border-[#14D81C] bg-[#14D81C]/10"
                 : errors?.email
                   ? "border-[#EA1919] bg-[#EA1919]/10"
-                  : "bg-[#FCFCFD]"
-            } placeholer:Example@redberry.ge rounded-xl border border-[#E4E3EB] px-4 py-2 outline-none`}
+                  : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3] "
+            } placeholer:Example@redberry.ge rounded-xl border  px-4 py-2 outline-none`}
             placeholder="Example@redberry.ge"
           />
           {errors?.email?.message && (
             <p className="text-sm text-[#EA1919]">{errors.email.message}</p>
           )}
-        </div> */}{" "}
+        </div>{" "}
         <button
           // className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"
           type="submit"
