@@ -1,6 +1,6 @@
-function Spinner() {
+function MiniSpinner() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white ">
+    <div className="">
       <div role="status">
         <svg
           aria-hidden="true"
@@ -24,4 +24,4 @@ function Spinner() {
   );
 }
 
-export default Spinner;
+export default MiniSpinner;

@@ -3,16 +3,23 @@ import { IoMdCheckmark } from "react-icons/io";
 import useLogin from "./useLogin";
 import { useForm } from "react-hook-form";
 import { useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Login({ closeModal }) {
   const [success, setSuccess] = useState(false);
   const { register, handleSubmit, formState, setError } = useForm();
 
+  const { pathname } = useLocation();
+
+  const navigate = useNavigate();
+
   const divRef = useRef(null);
   const { errors } = formState;
 
   function handleClickOutside(e) {
-    if (!divRef?.current?.contains(e.target)) closeModal();
+    if (!divRef?.current?.contains(e.target)) {
+      closeModal();
+    }
   }
 
   const { login } = useLogin();
@@ -36,7 +43,10 @@ function Login({ closeModal }) {
         {success ? (
           <>
             <div
-              onClick={closeModal}
+              onClick={() => {
+                closeModal();
+                if (pathname !== "/") navigate("/");
+              }}
               className="ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
             >
               <MdOutlineClose className="text-2xl" />
@@ -53,6 +63,8 @@ function Login({ closeModal }) {
               <button
                 onClick={() => {
                   closeModal();
+
+                  if (pathname !== "/") navigate("/");
                 }}
                 className="w-full rounded-lg bg-[#5D37F3] px-5 py-2.5 text-white duration-100 hover:brightness-90"
               >

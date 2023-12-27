@@ -5,10 +5,31 @@ import { PiDotOutlineFill } from "react-icons/pi";
 import { useRef } from "react";
 import { useCategories } from "../categories/useCategories";
 import { IoCloseOutline } from "react-icons/io5";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import useCreateBlog from "./useCreateBlog";
 
 const MAX_NUM_CHARACTERS = 50;
 
 function CreateBlogForm() {
+  // const schema = yup.object().shape({
+  //   author: yup
+  //     .string()
+  //     .required("ეს ველი სავალდებულოა")
+  //     .test(
+  //       "two-words",
+  //       "Must have at least two words",
+  //       (value) => value?.trim().split(" ").filter(Boolean).length >= 2,
+  //     )
+  //     .test(
+  //       "four-characters",
+  //       "Must be at least four characters long",
+  //       (value) => value?.trim().replace(/\s+/g, "").length >= 4,
+  //     )
+  //     .matches(/^[\u10A0-\u10FF\s]+$/, "Must contain only Georgian alphabets"),
+  //   // Define other fields and their validations as needed
+  // });
+
   const {
     register,
     handleSubmit,
@@ -16,12 +37,16 @@ function CreateBlogForm() {
     getValues,
     watch,
     setError,
+    resetField,
   } = useForm({
+    // resolver: yupResolver(schema),
     mode: "onChange",
   });
   const { categories, isLoading } = useCategories();
   const navigate = useNavigate();
   const imageRef = useRef(null);
+
+  const { createBlog } = useCreateBlog();
 
   const { ref, ...rest } = register("image", {
     required: "სურათი სავალდებულოა",
@@ -29,27 +54,21 @@ function CreateBlogForm() {
       value[0]?.type?.startsWith("image") || "ფაილი უნდა იყოს სურათი",
   });
 
-  const { onChange, ...inpRest } = register("dda", {
-    required: "ეს ველი სავალდებულოა",
-    minLength: {
-      value: 10,
-      message: "should be at least 10 characters",
-    },
-    pattern: {
-      value: /^[\w-\.]+@redberry.ge$/g,
-      message: "უნდა მთავრდებოდეს @redberry.ge-თ",
-    },
-    validate: (value) => value === "asd" || "err",
-
-    // value.replaceAll(" ", "").length >= 4 || "bla",
-  });
-
-  function stuff() {}
-
   function onSubmit(data) {
+    createBlog({
+      title: "asd asd",
+      description:
+        "testing123 so lets make up a story of how we found out that this button works like this and also \n \n \n this needed to be done too",
+      image: data.image[0],
+      author: "გელა გელაშვილი",
+      publish_date: "2023-12-26",
+      categories: "[14]",
+      email: "blabla@redberry.ge",
+    });
     // console.log(isDirty);
     // console.log(isValid);
-    console.log(dirtyFields);
+    // console.log(dirtyFields);
+    // console.log(data);
   }
 
   function onError(err) {
@@ -88,7 +107,10 @@ function CreateBlogForm() {
                     : getValues().image[0].name.replaceAll(" ", "")}
                 </p>
               </div>
-              <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]">
+              <div
+                onClick={() => resetField("image")}
+                className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
+              >
                 <IoCloseOutline className="text-2xl text-[#1A1A1F]" />
               </div>
             </div>
@@ -130,25 +152,22 @@ function CreateBlogForm() {
             <p className="mt-2 text-[#EA1919]">{errors?.image?.message}</p>
           )}
         </div>
-
-        <div className="flex gap-10">
+        {/* <div className="flex gap-6">
+          <div className="flex w-1/2 flex-col gap-3">
+            <h1 className="font-bold">გამოქვეყნების თარიღი *</h1>
+            <input
+              {...register("date")}
+              type="date"
+              className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
+            />
+          </div>
+        </div> */}
+        {/* DATE */}
+        {/* <div className="flex gap-10">
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">ავტორი *</h1>
             <input
-              {...register("author", {
-                required: "ეს ველი სავალდებულოა",
-                // minLength: {
-                //   value: 10,
-                //   message: "should be at least 10 characters",
-                // },
-                // pattern: {
-                //   value: /^[\w-\.]+@redberry.ge$/g,
-                //   message: "უნდა მთავრდებოდეს @redberry.ge-თ",
-                // },
-                // validate: (value) => value === "asd" || "err",
-
-                // value.replaceAll(" ", "").length >= 4 || "bla",
-              })}
+              {...register("author")}
               type="text"
               className={`${
                 dirtyFields.author && !errors.author
@@ -287,7 +306,7 @@ function CreateBlogForm() {
               className="placeholer:text-[#E4E3EB] rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] px-4 py-2 outline-none"
               placeholder="შეიყვანეთ სათაური"
             /> */}
-          </div>
+        {/* </div>
         </div>
 
         <div className="flex w-1/2 flex-col gap-3">
@@ -313,8 +332,7 @@ function CreateBlogForm() {
           {errors?.email?.message && (
             <p className="text-sm text-[#EA1919]">{errors.email.message}</p>
           )}
-        </div>
-
+        </div> */}{" "}
         <button
           // className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"
           type="submit"
