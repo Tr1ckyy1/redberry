@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 function BlogsRow({
   blog: { id, author, title, description, image, publish_date, categories },
 }) {
+  const MAX_NUM_OF_CHARACTERS = 80;
   return (
     <div className="space-y-4">
       <img src={image} className="h-[328px] w-full rounded-xl object-cover" />
@@ -20,15 +21,15 @@ function BlogsRow({
               color: category.text_color,
               background: category.background_color,
             }}
-            className={`cursor-pointer whitespace-nowrap rounded-full border-none px-2.5 py-1.5 outline-none duration-100 hover:brightness-95 `}
+            className={`whitespace-nowrap rounded-full border-none px-2.5 py-1.5 outline-none duration-100 `}
           >
             {category.title}
           </li>
         ))}
       </ul>
       <p>
-        {description.length > 80
-          ? `${description.substring(0, 80)}...`
+        {description.length > MAX_NUM_OF_CHARACTERS
+          ? `${description.substring(0, MAX_NUM_OF_CHARACTERS)}...`
           : description}
       </p>
       <Link

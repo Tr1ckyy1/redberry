@@ -55,8 +55,12 @@ function CreateBlogForm() {
   });
 
   function onSubmit(data) {
-    console.log(data);
-    // createBlog({
+    console.log({ ...data, image: data.image[0], categories: "[1,5,9]" });
+    createBlog({ ...data, image: data.image[0], categories: "[1,5,9]" });
+    /*
+
+
+  // createBlog({
     //   title: "asd asd",
     //   description:
     //     "testing123 so lets make up a story of how we found out that this button works like this and also \n \n \n this needed to be done too",
@@ -66,12 +70,14 @@ function CreateBlogForm() {
     //   categories: "[14]",
     //   email: "blabla@redberry.ge",
     // });
+*/
+
     // console.log(isDirty);
     // console.log(isValid);
     // console.log(dirtyFields);
     // const dateString = String(data.date);
     // // Split the date assuming it's in 'YYYY-MM-DD' format
-    // const parts = dateString.split("-");
+    // const parts = dateStrin%g.split("-");
     // if (parts.length === 3) {
     //   // Rearrange the date parts to 'DD/MM/YYYY' format
     //   const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -198,7 +204,7 @@ function CreateBlogForm() {
             <div className="flex text-sm text-[#85858D]">
               <PiDotOutlineFill />
               <p>მინიმუმ ორი სიტყვა</p>
-            </div>{" "}
+            </div>
             <div className="flex text-sm text-[#85858D]">
               <PiDotOutlineFill />
               <p>მხოლოდ ქართული სიმბოლოები</p>
@@ -275,18 +281,22 @@ function CreateBlogForm() {
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">გამოქვეყნების თარიღი *</h1>
             <input
-              {...register("date", { required: "ეს ველი სავალდებულოა" })}
+              {...register("publish_date", {
+                required: "ეს ველი სავალდებულოა",
+              })}
               type="date"
               className={`placeholer:text-[#E4E3EB] rounded-xl border  px-4 py-2 outline-none ${
-                dirtyFields.date && !errors.date
+                dirtyFields.publish_date && !errors.publish_date
                   ? "border-[#14D81C] bg-[#14D81C]/10"
-                  : errors?.date
+                  : errors?.publish_date
                     ? "border-[#EA1919] bg-[#EA1919]/10"
                     : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3]"
               }`}
             />
-            {errors?.date?.message && (
-              <p className="text-sm text-[#EA1919]">{errors.date.message}</p>
+            {errors?.publish_date?.message && (
+              <p className="text-sm text-[#EA1919]">
+                {errors.publish_date.message}
+              </p>
             )}
           </div>
           <div className="flex w-1/2 flex-col gap-3">
@@ -335,7 +345,7 @@ function CreateBlogForm() {
           {errors?.email?.message && (
             <p className="text-sm text-[#EA1919]">{errors.email.message}</p>
           )}
-        </div>{" "}
+        </div>
         <button
           // className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"
           type="submit"

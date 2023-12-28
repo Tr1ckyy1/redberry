@@ -17,7 +17,6 @@ function BlogPage() {
 
   // Extract categories from the current blog
   const categories = blog?.categories.map((category) => category.title);
-
   // Filter blogs that have at least one category in common with the current blog
   const similarBlogs = blogs
     ?.filter((single) =>
@@ -40,7 +39,7 @@ function BlogPage() {
   }
 
   return (
-    <div className="pb-40">
+    <>
       <div className="flex">
         <div
           onClick={() => navigate(-1)}
@@ -108,7 +107,7 @@ function BlogPage() {
                           color: category.text_color,
                           background: category.background_color,
                         }}
-                        className={`cursor-pointer whitespace-nowrap rounded-full border-none px-2.5 py-1.5 outline-none duration-100 hover:brightness-95 `}
+                        className={`whitespace-nowrap rounded-full border-none px-2.5 py-1.5 outline-none duration-100`}
                       >
                         {category.title}
                       </li>
@@ -133,7 +132,7 @@ function BlogPage() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
 

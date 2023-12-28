@@ -8,7 +8,7 @@ function Categories() {
   if (isLoading)
     return (
       <div className="flex items-center justify-center">
-        <MiniSpinner />;
+        <MiniSpinner />
       </div>
     );
   return (
