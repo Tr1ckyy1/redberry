@@ -6,7 +6,7 @@ import {
   IoMdCheckmark,
 } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { PiDotOutlineFill } from "react-icons/pi";
+import { PiDotOutlineFill, PiStackOverflowLogoDuotone } from "react-icons/pi";
 import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categories/useCategories";
 import { IoCloseOutline } from "react-icons/io5";
@@ -37,6 +37,7 @@ function CreateBlogForm() {
     trigger,
     reset,
   } = useForm({
+    defaultValues: JSON.parse(localStorage.getItem("formData")),
     mode: "onChange",
   });
 
@@ -56,12 +57,23 @@ function CreateBlogForm() {
   });
 
   useEffect(() => {
+    const base64String = JSON.parse(localStorage.getItem("formData")).image;
+    const image = new Image();
+    image.src = base64String;
+    console.log(image);
+  }, []);
+
+  useEffect(() => {
     if (clickedOnce && !selectedCategories.length > 0)
       setCategoriesError("ეს ველი სავალდებულოა");
     else {
       setCategoriesError("");
     }
   }, [selectedCategories, clickedOnce]);
+
+  useEffect(() => {
+    setSelectedCategories(JSON.parse(localStorage.getItem("categories")));
+  }, []);
 
   function handleAuthorErrors(e) {
     setAuthorErrors((oldErrors) => {
@@ -77,6 +89,21 @@ function CreateBlogForm() {
         alphabetError: !alphabetError,
       };
     });
+  }
+
+  function saveFileToLocalStorage(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const base64String = e.target.result;
+      localStorage.setItem(
+        "formData",
+        JSON.stringify({
+          ...JSON.parse(localStorage.getItem("formData")),
+          image: base64String,
+        }),
+      );
+    };
+    reader.readAsDataURL(file);
   }
 
   function onSubmit(data) {
@@ -97,13 +124,16 @@ function CreateBlogForm() {
         },
       },
     );
-
   }
 
   function handleClickOutside(e) {
     if (!modalRef?.current?.contains(e.target)) {
       setModalWindow(false);
     }
+  }
+
+  function onError(err) {
+    console.log(err);
   }
 
   return (
@@ -154,7 +184,20 @@ function CreateBlogForm() {
         <IoIosArrowBack className="text-2xl" />
       </div>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onChange={(e) => {
+          if (e.target.name !== "image") {
+            localStorage.setItem(
+              "formData",
+              JSON.stringify({
+                ...watch(),
+                [e.target.name]: e.target.value,
+              }),
+            );
+          } else {
+            saveFileToLocalStorage(e.target.files[0]);
+          }
+        }}
+        onSubmit={handleSubmit(onSubmit, onError)}
         className="ml-[25%] flex w-[41.6%] flex-col gap-10"
       >
         <div>
@@ -166,15 +209,15 @@ function CreateBlogForm() {
                 <img src="../.././public/gallery.jpg" />
                 {/* If image's name length exceeds MAX_NUM_CHARACTERS, show up to MAX_NUM_CHARACTERS, otherise show full name of the image*/}
                 <p>
-                  {getValues().image[0].name.replaceAll(" ", "").split(".")[0]
+                  {getValues().image[0]?.name?.replaceAll(" ", "").split(".")[0]
                     .length > MAX_NUM_CHARACTERS
                     ? `${getValues()
-                        .image[0].name.replaceAll(" ", "")
+                        .image[0]?.name?.replaceAll(" ", "")
                         .split(".")[0]
                         .slice(0, MAX_NUM_CHARACTERS)}...${
                         getValues().image[0].name.split(".")[1]
                       }`
-                    : getValues().image[0].name.replaceAll(" ", "")}
+                    : getValues().image[0]?.name?.replaceAll(" ", "")}
                 </p>
               </div>
               <div
@@ -212,7 +255,6 @@ function CreateBlogForm() {
                   {...rest}
                   accept="image/*"
                   type="file"
-                  id="imageRef"
                   ref={(e) => {
                     ref(e);
                     imageRef.current = e;
@@ -236,6 +278,12 @@ function CreateBlogForm() {
               {...register("author", {
                 required: "ეს ველი სავალდებულოა",
                 onChange: handleAuthorErrors,
+                pattern: {
+                  value: /^[\u10A0-\u10FF\s]+$/,
+                },
+                validate: (value) =>
+                  value.trim().split(" ").filter(Boolean).length >= 2 &&
+                  value.trim().replace(/\s+/g, "").length >= 4,
               })}
               type="text"
               className={`${
@@ -428,11 +476,16 @@ function CreateBlogForm() {
                         {cat.title}
                         <MdOutlineClose
                           onClick={() =>
-                            setSelectedCategories((oldCategories) =>
-                              oldCategories.filter(
+                            setSelectedCategories((oldCategories) => {
+                              const data = oldCategories.filter(
                                 (item) => item.id !== cat.id,
-                              ),
-                            )
+                              );
+                              localStorage.setItem(
+                                "categories",
+                                JSON.stringify(data),
+                              );
+                              return data;
+                            })
                           }
                           className="cursor-pointer rounded-xl duration-100 hover:brightness-95 "
                         />
@@ -455,7 +508,7 @@ function CreateBlogForm() {
                 >
                   {categories?.map((category) => (
                     <li
-                      onClick={() =>
+                      onClick={() => {
                         setSelectedCategories((oldCategories) => {
                           const categoryExists = oldCategories.find(
                             (cat) => cat.id === category.id,
@@ -464,8 +517,12 @@ function CreateBlogForm() {
                             return [...oldCategories, category];
 
                           return oldCategories;
-                        })
-                      }
+                        });
+                        localStorage.setItem(
+                          "categories",
+                          JSON.stringify([...selectedCategories, category]),
+                        );
+                      }}
                       style={{
                         color: category.text_color,
                         background: category.background_color,
@@ -509,20 +566,12 @@ function CreateBlogForm() {
         </div>
         <button
           disabled={
-            !isValid ||
-            !selectedCategories.length > 0 ||
-            categoriesError ||
-            authorErrors.alphabetError ||
-            authorErrors.twoWordsError ||
-            authorErrors.fourCharactersError
+            !isValid || !selectedCategories.length > 0 || categoriesError
           }
           className={`ml-auto w-[288px] rounded-lg bg-[#4721DD] px-5 py-2.5 text-white disabled:cursor-not-allowed disabled:bg-[#E4E3EB] ${
             isValid &&
             selectedCategories.length > 0 &&
             !categoriesError &&
-            !authorErrors.alphabetError &&
-            !authorErrors.twoWordsError &&
-            !authorErrors.fourCharactersError &&
             "duration-100 hover:brightness-90"
           }`}
           type="submit"

@@ -41,7 +41,7 @@ function SingleBlogPage({
           </li>
         ))}
       </ul>
-      <div className="space-y-10">
+      <div>
         {description.split("\n").map((stroke, index) => (
           <p key={index}>{stroke}</p>
         ))}
