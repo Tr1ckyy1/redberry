@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import CreateBlogForm from "../features/blogs/CreateBlogForm";
+import logo from "../../public/redberry-logo.jpg";
 
 function CreateBlog() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ function CreateBlog() {
       <header className="sticky top-0 flex justify-center border-b border-[#E4E3EB] bg-[#FFFFFF] px-14 py-6 text-sm">
         <img
           className="cursor-pointer object-none"
-          src="../../public/redberry-logo.jpg"
+          src={logo}
           onClick={() => navigate("/")}
         />
       </header>
