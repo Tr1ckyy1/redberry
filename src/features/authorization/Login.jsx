@@ -7,7 +7,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 function Login({ closeModal }) {
   const [success, setSuccess] = useState(false);
-  const { register, handleSubmit, formState, setError } = useForm();
+  const { register, handleSubmit, formState, setError } = useForm({
+    mode: "onChange",
+  });
 
   const { pathname } = useLocation();
 
@@ -34,11 +36,11 @@ function Login({ closeModal }) {
   return (
     <div
       onClick={handleClickOutside}
-      className="absolute inset-0 flex h-screen w-full items-center justify-center bg-black/20"
+      className="fixed inset-0 flex h-screen w-full items-center justify-center bg-black/20"
     >
       <div
         ref={divRef}
-        className="h-[300px] w-[480px] gap-10 rounded-xl bg-white p-6 shadow-lg"
+        className="h-[300px] w-1/3 gap-10 rounded-xl bg-white p-6 shadow-lg"
       >
         {success ? (
           <>

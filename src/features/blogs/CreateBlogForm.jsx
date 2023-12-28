@@ -1,34 +1,31 @@
 import { useForm } from "react-hook-form";
-import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
+import {
+  IoIosArrowBack,
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoMdCheckmark,
+} from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { PiDotOutlineFill } from "react-icons/pi";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categories/useCategories";
 import { IoCloseOutline } from "react-icons/io5";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import useCreateBlog from "./useCreateBlog";
+import { MdOutlineClose } from "react-icons/md";
 
 const MAX_NUM_CHARACTERS = 50;
 
 function CreateBlogForm() {
-  // const schema = yup.object().shape({
-  //   author: yup
-  //     .string()
-  //     .required("ეს ველი სავალდებულოა")
-  //     .test(
-  //       "two-words",
-  //       "Must have at least two words",
-  //       (value) => value?.trim().split(" ").filter(Boolean).length >= 2,
-  //     )
-  //     .test(
-  //       "four-characters",
-  //       "Must be at least four characters long",
-  //       (value) => value?.trim().replace(/\s+/g, "").length >= 4,
-  //     )
-  //     .matches(/^[\u10A0-\u10FF\s]+$/, "Must contain only Georgian alphabets"),
-  //   // Define other fields and their validations as needed
-  // });
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [modalWindow, setModalWindow] = useState(false);
+  const [categoriesError, setCategoriesError] = useState("");
+  const [expanded, setExpanded] = useState(false);
+  const [clickedOnce, setClickedOnce] = useState(false);
+  const [authorErrors, setAuthorErrors] = useState({
+    twoWordsError: false,
+    fourCharactersError: false,
+    alphabetError: false,
+  });
 
   const {
     register,
@@ -36,15 +33,19 @@ function CreateBlogForm() {
     formState: { errors, isValid, dirtyFields },
     getValues,
     watch,
-    setError,
     resetField,
+    trigger,
+    reset,
   } = useForm({
-    // resolver: yupResolver(schema),
     mode: "onChange",
   });
-  const { categories, isLoading } = useCategories();
+
+  const { categories } = useCategories();
   const navigate = useNavigate();
   const imageRef = useRef(null);
+  const categoriesAddedRef = useRef(null);
+  const categoriesListRef = useRef(null);
+  const modalRef = useRef(null);
 
   const { createBlog } = useCreateBlog();
 
@@ -54,44 +55,98 @@ function CreateBlogForm() {
       value[0]?.type?.startsWith("image") || "ფაილი უნდა იყოს სურათი",
   });
 
-  function onSubmit(data) {
-    console.log({ ...data, image: data.image[0], categories: "[1,5,9]" });
-    createBlog({ ...data, image: data.image[0], categories: "[1,5,9]" });
-    /*
+  useEffect(() => {
+    if (clickedOnce && !selectedCategories.length > 0)
+      setCategoriesError("ეს ველი სავალდებულოა");
+    else {
+      setCategoriesError("");
+    }
+  }, [selectedCategories, clickedOnce]);
 
-
-  // createBlog({
-    //   title: "asd asd",
-    //   description:
-    //     "testing123 so lets make up a story of how we found out that this button works like this and also \n \n \n this needed to be done too",
-    //   image: data.image[0],
-    //   author: "გელა გელაშვილი",
-    //   publish_date: "2023-12-26",
-    //   categories: "[14]",
-    //   email: "blabla@redberry.ge",
-    // });
-*/
-
-    // console.log(isDirty);
-    // console.log(isValid);
-    // console.log(dirtyFields);
-    // const dateString = String(data.date);
-    // // Split the date assuming it's in 'YYYY-MM-DD' format
-    // const parts = dateStrin%g.split("-");
-    // if (parts.length === 3) {
-    //   // Rearrange the date parts to 'DD/MM/YYYY' format
-    //   const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    //   // Update the data with the formatted date
-    //   data.date = formattedDate;
-    // }
+  function handleAuthorErrors(e) {
+    setAuthorErrors((oldErrors) => {
+      const twoWordsError =
+        e.target.value.trim().split(" ").filter(Boolean).length >= 2;
+      const fourCharactersError =
+        e.target.value.trim().replace(/\s+/g, "").length >= 4;
+      const alphabetError = /^[\u10A0-\u10FF\s]+$/.test(e.target.value);
+      return {
+        ...oldErrors,
+        twoWordsError: !twoWordsError,
+        fourCharactersError: !fourCharactersError,
+        alphabetError: !alphabetError,
+      };
+    });
   }
 
-  function onError(err) {
-    console.log(err);
+  function onSubmit(data) {
+    const categoriesArray = selectedCategories.map((item) => item.id);
+    createBlog(
+      {
+        ...data,
+        image: data.image[0],
+        categories: `[${categoriesArray}]`,
+      },
+      {
+        onSuccess: () => {
+          setModalWindow(true);
+          reset();
+          setSelectedCategories([]);
+          setClickedOnce(false);
+          setExpanded(false);
+        },
+      },
+    );
+
+  }
+
+  function handleClickOutside(e) {
+    if (!modalRef?.current?.contains(e.target)) {
+      setModalWindow(false);
+    }
   }
 
   return (
     <div className="flex px-14 py-10">
+      {modalWindow && (
+        <div
+          onClick={handleClickOutside}
+          className="fixed inset-0 z-50 flex h-screen w-full items-center justify-center bg-black/20"
+        >
+          <div
+            ref={modalRef}
+            className="h-[300px] w-1/3 gap-10 rounded-xl bg-white p-6 shadow-lg"
+          >
+            <div
+              onClick={() => {
+                navigate("/");
+              }}
+              className="ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
+            >
+              <MdOutlineClose className="text-2xl" />
+            </div>
+            <div className="space-y-16">
+              <div className="space-y-6">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#14D81C] text-4xl text-white">
+                  <IoMdCheckmark />
+                </div>
+                <h1 className="text-center text-xl font-bold">
+                  ჩანაწერი წარმატებით დაემატა
+                </h1>
+              </div>
+              <button
+                onClick={() => {
+                  navigate("/");
+                }}
+                className="w-full rounded-lg bg-[#5D37F3] px-5 py-2.5 text-white duration-100 hover:brightness-90"
+              >
+                მთავარ გვერდზე დაბრუნება
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         onClick={() => navigate(-1)}
         className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-[#E4E3EB] duration-100 hover:bg-[#D9D8E0]"
@@ -99,7 +154,7 @@ function CreateBlogForm() {
         <IoIosArrowBack className="text-2xl" />
       </div>
       <form
-        onSubmit={handleSubmit(onSubmit, onError)}
+        onSubmit={handleSubmit(onSubmit)}
         className="ml-[25%] flex w-[41.6%] flex-col gap-10"
       >
         <div>
@@ -123,7 +178,10 @@ function CreateBlogForm() {
                 </p>
               </div>
               <div
-                onClick={() => resetField("image")}
+                onClick={() => {
+                  resetField("image");
+                  trigger("image");
+                }}
                 className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
               >
                 <IoCloseOutline className="text-2xl text-[#1A1A1F]" />
@@ -131,7 +189,9 @@ function CreateBlogForm() {
             </div>
           ) : (
             <div
-              className={`h-[200px]  rounded-xl border border-dashed  p-10 duration-100  ${
+              className={`h-[200px]  rounded-xl border border-dashed  p-10 duration-100
+
+              ${
                 errors.image
                   ? "border-[#EA1919] bg-[#EA1919]/10"
                   : "border-[#85858D]  bg-[#F4F3FF] hover:bg-[#F1EFFB]"
@@ -173,12 +233,20 @@ function CreateBlogForm() {
           <div className="flex w-1/2 flex-col gap-3">
             <h1 className="font-bold">ავტორი *</h1>
             <input
-              {...register("author", { required: "bl;a" })}
+              {...register("author", {
+                required: "ეს ველი სავალდებულოა",
+                onChange: handleAuthorErrors,
+              })}
               type="text"
               className={`${
-                dirtyFields.author && !errors.author
+                dirtyFields.author &&
+                !authorErrors.twoWordsError &&
+                !authorErrors.fourCharactersError &&
+                !authorErrors.alphabetError
                   ? "border-[#14D81C] bg-[#14D81C]/10"
-                  : errors?.author
+                  : authorErrors.twoWordsError ||
+                      authorErrors.fourCharactersError ||
+                      authorErrors.alphabetError
                     ? "border-[#EA1919] bg-[#EA1919]/10"
                     : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3] "
               } placeholer:text-[#E4E3EB] rounded-xl border  px-4 py-2 outline-none `}
@@ -189,11 +257,14 @@ function CreateBlogForm() {
             )}
             <div className={"flex text-sm text-[#85858D]"}>
               <PiDotOutlineFill />
+              {/*
+
+              */}
               <p
                 className={`${
-                  dirtyFields.author && !errors.author
+                  dirtyFields.author && !authorErrors.fourCharactersError
                     ? "text-[#14D81C]"
-                    : errors?.author?.message
+                    : authorErrors.fourCharactersError
                       ? "text-[#EA1919]"
                       : "text-[#85858D]"
                 }`}
@@ -203,11 +274,31 @@ function CreateBlogForm() {
             </div>
             <div className="flex text-sm text-[#85858D]">
               <PiDotOutlineFill />
-              <p>მინიმუმ ორი სიტყვა</p>
+              <p
+                className={`${
+                  dirtyFields.author && !authorErrors.twoWordsError
+                    ? "text-[#14D81C]"
+                    : authorErrors.twoWordsError
+                      ? "text-[#EA1919]"
+                      : "text-[#85858D]"
+                }`}
+              >
+                მინიმუმ ორი სიტყვა
+              </p>
             </div>
             <div className="flex text-sm text-[#85858D]">
               <PiDotOutlineFill />
-              <p>მხოლოდ ქართული სიმბოლოები</p>
+              <p
+                className={`${
+                  dirtyFields.author && !authorErrors.alphabetError
+                    ? "text-[#14D81C]"
+                    : authorErrors.alphabetError
+                      ? "text-[#EA1919]"
+                      : "text-[#85858D]"
+                }`}
+              >
+                მხოლოდ ქართული სიმბოლოები
+              </p>
             </div>
           </div>
           <div className="flex w-1/2 flex-col gap-3">
@@ -230,6 +321,7 @@ function CreateBlogForm() {
             {errors?.title?.message && (
               <p className="text-sm text-[#EA1919]">{errors.title.message}</p>
             )}
+
             <p
               className={`text-sm ${
                 dirtyFields.title && !errors.title
@@ -299,31 +391,100 @@ function CreateBlogForm() {
               </p>
             )}
           </div>
-          <div className="flex w-1/2 flex-col gap-3">
+          <div className="flex h-fit w-1/2 flex-col gap-3">
             <h1 className="font-bold">კატეგორია *</h1>
-            <div className="relative flex h-full w-full items-center justify-between rounded-xl border border-[#E4E3EB] bg-[#FCFCFD] py-2">
-              <p className="px-4 text-[#85858D]">აირჩიეთ კატეგორია</p>
-              <div className="pr-4">
-                <IoIosArrowDown className="text-2xl text-[#292D32]" />
+            <div
+              onClick={(e) => {
+                setClickedOnce(true);
+                if (
+                  !categoriesAddedRef?.current?.contains(e.target) &&
+                  !categoriesListRef?.current?.contains(e.target)
+                )
+                  setExpanded((old) => !old);
+              }}
+              className={`relative flex h-full w-full items-center justify-between rounded-xl ${
+                selectedCategories.length > 0
+                  ? "border-[#14D81C] bg-[#14D81C]/10"
+                  : categoriesError
+                    ? "border-[#EA1919] bg-[#EA1919]/10"
+                    : "border-[#E4E3EB] bg-[#FCFCFD] "
+              } border  ${
+                selectedCategories.length > 0 ? "px-1 py-0.5" : "px-4 py-2"
+              }`}
+            >
+              {selectedCategories.length > 0 ? (
+                <div className="flex gap-1 overflow-x-scroll  scrollbar-none">
+                  {selectedCategories.map((cat) => (
+                    <div
+                      ref={categoriesAddedRef}
+                      key={cat.title}
+                      style={{
+                        color: cat.text_color,
+                        background: cat.background_color,
+                      }}
+                      className="h-fit w-fit whitespace-nowrap rounded-full border-none px-3 py-2 outline-none duration-100"
+                    >
+                      <div className="flex items-center gap-2">
+                        {cat.title}
+                        <MdOutlineClose
+                          onClick={() =>
+                            setSelectedCategories((oldCategories) =>
+                              oldCategories.filter(
+                                (item) => item.id !== cat.id,
+                              ),
+                            )
+                          }
+                          className="cursor-pointer rounded-xl duration-100 hover:brightness-95 "
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className=" text-[#85858D]">აირჩიეთ კატეგორია</p>
+              )}
+              <div className="text-2xl text-[#292D32]">
+                {expanded ? <IoIosArrowUp /> : <IoIosArrowDown />}
               </div>
-              <ul className="absolute top-10 flex h-28 w-full flex-wrap gap-2 overflow-x-hidden overflow-y-scroll bg-black/10 p-2 ">
-                {categories?.map((category) => (
-                  <li
-                    style={{
-                      color: category.text_color,
-                      background: category.background_color,
-                    }}
-                    className="w-fit cursor-pointer whitespace-nowrap rounded-full border-none px-4 py-2 outline-none duration-100 hover:brightness-95   "
-                    key={category.id}
-                  >
-                    {category.title}
-                  </li>
-                ))}
-              </ul>
+              {expanded && (
+                <ul
+                  ref={categoriesListRef}
+                  className={`absolute left-0 ${
+                    categoriesError ? "top-[80px]" : "top-[50px]"
+                  } flex h-28 w-full flex-wrap gap-2 overflow-x-hidden overflow-y-scroll rounded-xl  p-2 shadow-md scrollbar-thin scrollbar-track-slate-200 scrollbar-thumb-slate-300`}
+                >
+                  {categories?.map((category) => (
+                    <li
+                      onClick={() =>
+                        setSelectedCategories((oldCategories) => {
+                          const categoryExists = oldCategories.find(
+                            (cat) => cat.id === category.id,
+                          );
+                          if (!categoryExists)
+                            return [...oldCategories, category];
+
+                          return oldCategories;
+                        })
+                      }
+                      style={{
+                        color: category.text_color,
+                        background: category.background_color,
+                      }}
+                      className="w-fit cursor-pointer whitespace-nowrap rounded-full border-none px-3 py-2 outline-none duration-100 hover:brightness-95"
+                      key={category.id}
+                    >
+                      {category.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
+            {categoriesError && (
+              <p className="text-sm text-[#EA1919]">{categoriesError}</p>
+            )}
           </div>
         </div>
-        <div className="flex w-1/2 flex-col gap-3">
+        <div className="flex  w-full flex-col gap-3">
           <h1 className="font-bold">ელ-ფოსტა</h1>
           <input
             {...register("email", {
@@ -339,7 +500,7 @@ function CreateBlogForm() {
                 : errors?.email
                   ? "border-[#EA1919] bg-[#EA1919]/10"
                   : "border-[#E4E3EB] bg-[#FCFCFD] focus:border-[#5D37F3] "
-            } placeholer:Example@redberry.ge rounded-xl border  px-4 py-2 outline-none`}
+            } placeholer:Example@redberry.ge w-[48%] rounded-xl border px-4 py-2 outline-none`}
             placeholder="Example@redberry.ge"
           />
           {errors?.email?.message && (
@@ -347,7 +508,23 @@ function CreateBlogForm() {
           )}
         </div>
         <button
-          // className="ml-auto w-[288px] rounded-lg bg-[#E4E3EB] px-5 py-2.5 text-white"
+          disabled={
+            !isValid ||
+            !selectedCategories.length > 0 ||
+            categoriesError ||
+            authorErrors.alphabetError ||
+            authorErrors.twoWordsError ||
+            authorErrors.fourCharactersError
+          }
+          className={`ml-auto w-[288px] rounded-lg bg-[#4721DD] px-5 py-2.5 text-white disabled:cursor-not-allowed disabled:bg-[#E4E3EB] ${
+            isValid &&
+            selectedCategories.length > 0 &&
+            !categoriesError &&
+            !authorErrors.alphabetError &&
+            !authorErrors.twoWordsError &&
+            !authorErrors.fourCharactersError &&
+            "duration-100 hover:brightness-90"
+          }`}
           type="submit"
         >
           გამოქვეყნება
