@@ -6,7 +6,7 @@ import {
   IoMdCheckmark,
 } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { PiDotOutlineFill, PiStackOverflowLogoDuotone } from "react-icons/pi";
+import { PiDotOutlineFill } from "react-icons/pi";
 import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categories/useCategories";
 import { IoCloseOutline } from "react-icons/io5";
@@ -27,6 +27,8 @@ function CreateBlogForm() {
     alphabetError: false,
   });
 
+  const [imageBase64, setImageBase64] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -37,7 +39,10 @@ function CreateBlogForm() {
     trigger,
     reset,
   } = useForm({
-    defaultValues: JSON.parse(localStorage.getItem("formData")),
+    defaultValues: localStorage.getItem("formData")
+      ? JSON.parse(localStorage.getItem("formData"))
+      : {},
+    // image: getPhoto(),
     mode: "onChange",
   });
 
@@ -57,13 +62,6 @@ function CreateBlogForm() {
   });
 
   useEffect(() => {
-    const base64String = JSON.parse(localStorage.getItem("formData")).image;
-    const image = new Image();
-    image.src = base64String;
-    console.log(image);
-  }, []);
-
-  useEffect(() => {
     if (clickedOnce && !selectedCategories.length > 0)
       setCategoriesError("ეს ველი სავალდებულოა");
     else {
@@ -72,7 +70,8 @@ function CreateBlogForm() {
   }, [selectedCategories, clickedOnce]);
 
   useEffect(() => {
-    setSelectedCategories(JSON.parse(localStorage.getItem("categories")));
+    if (localStorage.getItem("categories"))
+      setSelectedCategories(JSON.parse(localStorage.getItem("categories")));
   }, []);
 
   function handleAuthorErrors(e) {
@@ -91,20 +90,40 @@ function CreateBlogForm() {
     });
   }
 
-  function saveFileToLocalStorage(file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const base64String = e.target.result;
-      localStorage.setItem(
-        "formData",
-        JSON.stringify({
-          ...JSON.parse(localStorage.getItem("formData")),
-          image: base64String,
-        }),
-      );
-    };
-    reader.readAsDataURL(file);
-  }
+  // function saveFileToLocalStorage(file) {
+  //   const reader = new FileReader();
+  //   reader.onload = function (e) {
+  //     const base64String = e.target.result;
+  //     localStorage.setItem(
+  //       "formData",
+  //       JSON.stringify({
+  //         ...JSON.parse(localStorage.getItem("formData")),
+  //         image: base64String,
+  //       }),
+  //     );
+  //     localStorage.setItem(
+  //       "imageData",
+  //       JSON.stringify({ name: file.name, type: file.type }),
+  //     );
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
+
+  // function getPhoto() {
+  //   if (!JSON.parse(localStorage.getItem("formData")).image) return;
+  //   const base64 = JSON.parse(localStorage.getItem("formData")).image;
+
+  //   const data =
+  //     localStorage.getItem("imageData") &&
+  //     JSON.parse(localStorage.getItem("imageData"));
+  //   const base64Parts = base64.split(",");
+  //   // const fileFormat = base64Parts[0].split(";")[1];
+  //   const fileContent = base64Parts[1];
+  //   const file = new File([fileContent], data.name, {
+  //     type: data?.type,
+  //   });
+  //   return file;
+  // }
 
   function onSubmit(data) {
     const categoriesArray = selectedCategories.map((item) => item.id);
@@ -193,9 +212,10 @@ function CreateBlogForm() {
                 [e.target.name]: e.target.value,
               }),
             );
-          } else {
-            saveFileToLocalStorage(e.target.files[0]);
           }
+          // else {
+          //   saveFileToLocalStorage(e.target.files[0]);
+          // }
         }}
         onSubmit={handleSubmit(onSubmit, onError)}
         className="ml-[25%] flex w-[41.6%] flex-col gap-10"

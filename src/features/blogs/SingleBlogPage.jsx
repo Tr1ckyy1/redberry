@@ -23,7 +23,7 @@ function SingleBlogPage({
         <div className="flex items-center text-sm text-[#85858D]">
           <p>{publish_date}</p>
           <LuDot className="text-lg" />
-          <p>{email}</p>
+          {email && <p>{email}</p>}
         </div>
       </div>
       <h1 className="text-4xl font-bold">{title}</h1>
