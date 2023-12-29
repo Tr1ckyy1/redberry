@@ -202,7 +202,7 @@ function CreateBlogForm() {
         onSuccess: () => {
           localStorage.removeItem("formData");
           localStorage.removeItem("categories");
-          localStorage.removeItem("authErrors");
+          localStorage.removeItem("authorErrors");
           reset();
           setSelectedCategories([]);
           setModalWindow(true);
