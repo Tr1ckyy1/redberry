@@ -19,7 +19,7 @@ function BlogPage() {
 
   // Extract categories from the current blog
   const categories = blog?.categories.map((category) => category.title);
-  // Filter blogs that have at least one category in common with the current blog
+  // Filter blogs that have at least one category in common with the current blog, except for the blog that is shown currently
   const similarBlogs = blogs
     ?.filter((single) =>
       single.categories.some((category) =>
