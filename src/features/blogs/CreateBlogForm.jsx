@@ -181,6 +181,8 @@ function CreateBlogForm() {
     return emptyFileList;
   }
 
+  console.log(getValues());
+
   function onSubmit(data) {
     const categoriesArray = selectedCategories.map((item) => item.id);
 
@@ -195,7 +197,13 @@ function CreateBlogForm() {
           localStorage.removeItem("formData");
           localStorage.removeItem("categories");
           localStorage.removeItem("authorErrors");
-          reset();
+          setValue("image", emptyFile());
+          setValue("author", "");
+          setValue("title", "");
+          setValue("description", "");
+          setValue("publish_date", "");
+          setValue("email", "");
+          // reset();
           setSelectedCategories([]);
           setModalWindow(true);
           setClickedOnce(false);
