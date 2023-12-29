@@ -1,5 +1,5 @@
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SingleBlogPage from "../features/blogs/SingleBlogPage";
 import { useBlog } from "../features/blogs/useBlog";
 import { useBlogs } from "../features/blogs/useBlogs";
@@ -10,7 +10,8 @@ function BlogPage() {
   const [startIndex, setStartIndex] = useState(0);
   const BLOGS_PER_PAGE = 3;
 
-  const navigate = useNavigate();
+  const location = useLocation();
+  const goBack = location.state?.search || "";
 
   const { blog, isLoading } = useBlog();
   const { blogs } = useBlogs();
@@ -44,15 +45,17 @@ function BlogPage() {
     }
   }
 
+  console.log(location);
+
   return (
     <>
       <div className="flex">
-        <div
-          onClick={() => navigate(-1)}
+        <Link
+          to={`..${goBack}`}
           className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-[#E4E3EB] duration-100 hover:bg-[#D9D8E0]"
         >
           <IoIosArrowBack className="text-2xl" />
-        </div>
+        </Link>
 
         <div className="ml-[25%] w-1/2 gap-10">
           <SingleBlogPage blog={blog} isLoading={isLoading} />

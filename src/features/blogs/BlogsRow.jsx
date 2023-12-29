@@ -1,9 +1,11 @@
 import { MdArrowOutward } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 function BlogsRow({
   blog: { id, author, title, description, image, publish_date, categories },
 }) {
+  const [searchParams] = useSearchParams();
+
   const MAX_NUM_OF_CHARACTERS = 80;
   return (
     <div className="space-y-4">
@@ -33,6 +35,7 @@ function BlogsRow({
           : description}
       </p>
       <Link
+        state={{ search: `?${searchParams.toString()}` }}
         to={`blogs/${id}`}
         className="flex items-center gap-2 font-bold text-[#5D37F3] duration-100 hover:opacity-90"
       >
