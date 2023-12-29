@@ -197,13 +197,14 @@ function CreateBlogForm() {
           localStorage.removeItem("formData");
           localStorage.removeItem("categories");
           localStorage.removeItem("authorErrors");
-          setValue("image", emptyFile());
-          setValue("author", "");
-          setValue("title", "");
-          setValue("description", "");
-          setValue("publish_date", "");
-          setValue("email", "");
-          // reset();
+          reset({
+            author: "",
+            image: emptyFile(),
+            title: "",
+            description: "",
+            publish_date: "",
+            email: "",
+          });
           setSelectedCategories([]);
           setModalWindow(true);
           setClickedOnce(false);
