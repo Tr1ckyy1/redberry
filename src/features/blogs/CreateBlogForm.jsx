@@ -107,6 +107,26 @@ function CreateBlogForm() {
     }
   }, [dirtyFields, trigger]);
 
+  useEffect(() => {
+    if (localStorage.getItem("formData")) {
+      // console.log(getValues().image.length === 1 && !getValues().image[0]);
+      if (getValues().image.length === 1 && !getValues().image[0])
+        setValue("image", emptyFile());
+
+      // data.image = emptyFile();
+      // console.log(data.image);
+      // console.log(getValues().image);
+    }
+    // JSON.parse({
+    //   ...localStorage.getItem("formData"),
+    //   image:
+    //     getValues().image.length === 1 && !getValues().image[0]
+    //       ? emptyFile()
+    //       : [blobToFile()],
+    // });
+  }, [getValues, setValue]);
+  // console.log(getValues().image.length === 1 && !getValues().image[0]);
+
   function handleAuthorErrors(e) {
     setAuthorErrors((oldErrors) => {
       const twoWordsError =
@@ -268,11 +288,13 @@ function CreateBlogForm() {
       </div>
       <form
         onChange={(e) => {
+          const formData = JSON.parse(localStorage.getItem("formData"));
           if (e.target.name !== "image") {
+            console.log(e);
             localStorage.setItem(
               "formData",
               JSON.stringify({
-                ...watch(),
+                ...formData,
                 [e.target.name]: e.target.value,
               }),
             );
