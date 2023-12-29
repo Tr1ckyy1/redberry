@@ -196,6 +196,7 @@ function CreateBlogForm() {
           localStorage.removeItem("categories");
           localStorage.removeItem("authorErrors");
           reset();
+          resetField("author");
           setSelectedCategories([]);
           setModalWindow(true);
           setClickedOnce(false);
