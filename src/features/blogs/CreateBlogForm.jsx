@@ -12,8 +12,8 @@ import { useCategories } from "../categories/useCategories";
 import { IoCloseOutline } from "react-icons/io5";
 import useCreateBlog from "./useCreateBlog";
 import { MdOutlineClose } from "react-icons/md";
-import gallery from "../.././public/gallery.jpg";
-import addFile from "../../../public/add-file.png";
+import gallery from "../../../public/gallery.jpg";
+import add from "../../../public/add.png";
 
 const MAX_NUM_CHARACTERS = 50;
 
@@ -344,7 +344,7 @@ function CreateBlogForm() {
                 className="flex flex-col items-center justify-center gap-8"
               >
                 <div>
-                  <img src={addFile} />
+                  <img src={add} />
                 </div>
                 <input
                   hidden
