@@ -209,6 +209,9 @@ function CreateBlogForm() {
           setClickedOnce(false);
           setExpanded(false);
         },
+        onSettled: () => {
+          reset();
+        },
       },
     );
   }
