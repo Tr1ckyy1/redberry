@@ -32,15 +32,7 @@ function CreateBlogForm() {
   const {
     register,
     handleSubmit,
-    formState: {
-      errors,
-      isValid,
-      dirtyFields,
-      isSubmitted,
-      isSubmitSuccessful,
-      isSubmitting,
-      isLoading,
-    },
+    formState: { errors, isValid, dirtyFields },
     getValues,
     watch,
     resetField,
@@ -208,9 +200,6 @@ function CreateBlogForm() {
           setModalWindow(true);
           setClickedOnce(false);
           setExpanded(false);
-        },
-        onSettled: () => {
-          reset();
         },
       },
     );
