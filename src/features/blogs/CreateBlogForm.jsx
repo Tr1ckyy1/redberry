@@ -5,7 +5,6 @@ import {
   IoIosArrowUp,
   IoMdCheckmark,
 } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
 import { PiDotOutlineFill } from "react-icons/pi";
 import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categories/useCategories";
@@ -17,7 +16,7 @@ import add from "../../../public/add.png";
 
 const MAX_NUM_CHARACTERS = 50;
 
-function CreateBlogForm() {
+function CreateBlogForm({goBack,navigate}) {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [modalWindow, setModalWindow] = useState(false);
   const [categoriesError, setCategoriesError] = useState("");
@@ -57,7 +56,8 @@ function CreateBlogForm() {
   });
 
   const { categories } = useCategories();
-  const navigate = useNavigate();
+
+
   const imageRef = useRef(null);
   const categoriesAddedRef = useRef(null);
   const categoriesListRef = useRef(null);
@@ -255,9 +255,7 @@ function CreateBlogForm() {
                 </h1>
               </div>
               <button
-                onClick={() => {
-                  navigate("/");
-                }}
+                onClick={() => navigate(`/${goBack}`)}
                 className="w-full rounded-lg bg-[#5D37F3] px-5 py-2.5 text-white duration-100 hover:brightness-90"
               >
                 მთავარ გვერდზე დაბრუნება
@@ -268,7 +266,7 @@ function CreateBlogForm() {
       )}
 
       <div
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(`/${goBack}`)}
         className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-[#E4E3EB] duration-100 hover:bg-[#D9D8E0]"
       >
         <IoIosArrowBack className="text-2xl" />

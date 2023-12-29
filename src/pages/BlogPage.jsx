@@ -10,8 +10,8 @@ function BlogPage() {
   const [startIndex, setStartIndex] = useState(0);
   const BLOGS_PER_PAGE = 3;
 
-  const location = useLocation();
-  const goBack = location.state?.search || "";
+  const { state } = useLocation();
+  const goBack = state?.search || "";
 
   const { blog, isLoading } = useBlog();
   const { blogs } = useBlogs();

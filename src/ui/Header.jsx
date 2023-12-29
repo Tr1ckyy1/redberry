@@ -3,17 +3,21 @@ import Login from "../features/authorization/Login";
 import logo from "../../public/redberry-logo.jpg";
 
 import Spinner from "./Spinner";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useAuthentication } from "./useAuthentication";
 
 function Header() {
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { pathname, state } = useLocation();
 
   const goBack = state?.search || "";
-
-
 
   const { isLoading, isLoggedIn, logOut } = useAuthentication();
 
@@ -33,6 +37,7 @@ function Header() {
       {isLoggedIn ? (
         <div className="space-x-4">
           <Link
+            state={{ search: `?${searchParams.toString()}` }}
             to="/createblog"
             className="rounded-lg bg-[#5D37F3] px-5 py-2.5 text-white hover:brightness-95"
           >
