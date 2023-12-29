@@ -9,7 +9,11 @@ import { useAuthentication } from "./useAuthentication";
 function Header() {
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
+
+  const goBack = state?.search || "";
+
+
 
   const { isLoading, isLoggedIn, logOut } = useAuthentication();
 
@@ -22,7 +26,7 @@ function Header() {
         src={logo}
         onClick={() => {
           window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-          if (pathname && pathname !== "/") navigate("/");
+          if (pathname && pathname !== "/") navigate(`/${goBack}`);
         }}
       />
 
@@ -36,9 +40,9 @@ function Header() {
           </Link>
           <button
             onClick={() => {
-
-              logOut()
-            navigate("/")}}
+              logOut();
+              navigate("/");
+            }}
             className="rounded-lg bg-slate-200 px-5 py-2.5 hover:brightness-95"
           >
             გამოსვლა

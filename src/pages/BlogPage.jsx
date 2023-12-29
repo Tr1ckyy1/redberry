@@ -45,8 +45,6 @@ function BlogPage() {
     }
   }
 
-  console.log(location);
-
   return (
     <>
       <div className="flex">
