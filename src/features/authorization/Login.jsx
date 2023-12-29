@@ -47,7 +47,6 @@ function Login({ closeModal }) {
             <div
               onClick={() => {
                 closeModal();
-                if (pathname !== "/") navigate("/");
               }}
               className="ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
             >

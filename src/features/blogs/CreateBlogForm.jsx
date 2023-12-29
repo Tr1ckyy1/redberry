@@ -12,6 +12,7 @@ import { useCategories } from "../categories/useCategories";
 import { IoCloseOutline } from "react-icons/io5";
 import useCreateBlog from "./useCreateBlog";
 import { MdOutlineClose } from "react-icons/md";
+import gallery from "../.././public/gallery.jpg";
 
 const MAX_NUM_CHARACTERS = 50;
 
@@ -287,7 +288,7 @@ function CreateBlogForm() {
           {!errors?.image?.message && getValues()?.image?.length > 0 ? (
             <div className="mt-4 flex h-14 w-full items-center justify-between  rounded-xl bg-[#F4F3FF] px-4 duration-100 hover:bg-[#F1EFFB]">
               <div className="flex items-center gap-2">
-                <img src="../.././public/gallery.jpg" />
+                <img src={gallery} />
                 {/* If image's name length exceeds MAX_NUM_CHARACTERS, show up to MAX_NUM_CHARACTERS, otherise show full name of the image*/}
                 <p>
                   {getValues().image[0]?.name?.replaceAll(" ", "").split(".")[0]

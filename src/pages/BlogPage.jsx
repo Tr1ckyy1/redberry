@@ -59,7 +59,7 @@ function BlogPage() {
         </div>
       </div>
 
-      {similarBlogs && similarBlogs.length > 0 && (
+      {similarBlogs && similarBlogs?.length > 0 && (
         <>
           <div className="mt-20 flex items-center justify-between">
             <h1 className="text-2xl font-bold">მსგავსი სტატიები</h1>

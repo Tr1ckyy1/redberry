@@ -35,7 +35,10 @@ function Header() {
             დაამატე ბლოგი
           </Link>
           <button
-            onClick={logOut}
+            onClick={() => {
+
+              logOut()
+            navigate("/")}}
             className="rounded-lg bg-slate-200 px-5 py-2.5 hover:brightness-95"
           >
             გამოსვლა
