@@ -181,8 +181,6 @@ function CreateBlogForm() {
     return emptyFileList;
   }
 
-  console.log(getValues());
-
   function onSubmit(data) {
     const categoriesArray = selectedCategories.map((item) => item.id);
 
@@ -197,6 +195,7 @@ function CreateBlogForm() {
           localStorage.removeItem("formData");
           localStorage.removeItem("categories");
           localStorage.removeItem("authorErrors");
+          // ყველა ინფუთ ველიუს ცალკე რესეტს იმიტო ვუკეთებ რო მთლიან reset() ფუნქციაზე field-ებში ველიუ რჩებოდა ვერსელზე და ნეტლიფაიზე. ლოკალჰზე უბრალო reset()-ითაც მუშაობდა...
           reset({
             author: "",
             image: emptyFile(),
