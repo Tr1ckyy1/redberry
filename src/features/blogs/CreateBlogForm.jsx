@@ -27,22 +27,38 @@ function CreateBlogForm() {
     alphabetError: false,
   });
 
-  const [imageBase64, setImageBase64] = useState("");
-
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, dirtyFields },
+    formState: {
+      errors,
+      isValid,
+      dirtyFields,
+      isSubmitted,
+      isSubmitSuccessful,
+      isSubmitting,
+      isLoading,
+    },
     getValues,
     watch,
     resetField,
     trigger,
     reset,
+    setValue,
+    setError,
   } = useForm({
     defaultValues: localStorage.getItem("formData")
-      ? JSON.parse(localStorage.getItem("formData"))
+      ? {
+          ...JSON.parse(localStorage.getItem("formData")),
+          image:
+            JSON.stringify(
+              JSON.parse(localStorage.getItem("formData")).image,
+            ) === "{}"
+              ? emptyFile()
+              : [blobToFile()],
+        }
       : {},
-    // image: getPhoto(),
+
     mode: "onChange",
   });
 
@@ -72,7 +88,30 @@ function CreateBlogForm() {
   useEffect(() => {
     if (localStorage.getItem("categories"))
       setSelectedCategories(JSON.parse(localStorage.getItem("categories")));
+
+    if (
+      localStorage.getItem("categories") &&
+      !JSON.parse(localStorage.getItem("categories")).length > 0
+    )
+      localStorage.removeItem("categories");
   }, []);
+
+  // If form exists in localStorage, trigger errors on refresh
+  useEffect(() => {
+    if (localStorage.getItem("formData")) {
+      Object.entries(JSON.parse(localStorage.getItem("formData"))).forEach(
+        (item) => {
+          if (item[0] !== "image" && item[1]) {
+            dirtyFields[item[0]] = true;
+            trigger(item[0]);
+          }
+        },
+      );
+
+      if (localStorage.getItem("authorErrors") && dirtyFields.author)
+        setAuthorErrors(JSON.parse(localStorage.getItem("authorErrors")));
+    }
+  }, [dirtyFields, trigger]);
 
   function handleAuthorErrors(e) {
     setAuthorErrors((oldErrors) => {
@@ -81,6 +120,15 @@ function CreateBlogForm() {
       const fourCharactersError =
         e.target.value.trim().replace(/\s+/g, "").length >= 4;
       const alphabetError = /^[\u10A0-\u10FF\s]+$/.test(e.target.value);
+
+      localStorage.setItem(
+        "authorErrors",
+        JSON.stringify({
+          twoWordsError: !twoWordsError,
+          fourCharactersError: !fourCharactersError,
+          alphabetError: !alphabetError,
+        }),
+      );
       return {
         ...oldErrors,
         twoWordsError: !twoWordsError,
@@ -90,43 +138,58 @@ function CreateBlogForm() {
     });
   }
 
-  // function saveFileToLocalStorage(file) {
-  //   const reader = new FileReader();
-  //   reader.onload = function (e) {
-  //     const base64String = e.target.result;
-  //     localStorage.setItem(
-  //       "formData",
-  //       JSON.stringify({
-  //         ...JSON.parse(localStorage.getItem("formData")),
-  //         image: base64String,
-  //       }),
-  //     );
-  //     localStorage.setItem(
-  //       "imageData",
-  //       JSON.stringify({ name: file.name, type: file.type }),
-  //     );
-  //   };
-  //   reader.readAsDataURL(file);
-  // }
+  function handleFileUpload(file = null) {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        localStorage.setItem(
+          "formData",
+          JSON.stringify({
+            ...JSON.parse(localStorage.getItem("formData")),
+            image: reader.result,
+            imageName: file.name,
+          }),
+        );
+      };
 
-  // function getPhoto() {
-  //   if (!JSON.parse(localStorage.getItem("formData")).image) return;
-  //   const base64 = JSON.parse(localStorage.getItem("formData")).image;
+      reader.readAsDataURL(file);
+    }
+  }
 
-  //   const data =
-  //     localStorage.getItem("imageData") &&
-  //     JSON.parse(localStorage.getItem("imageData"));
-  //   const base64Parts = base64.split(",");
-  //   // const fileFormat = base64Parts[0].split(";")[1];
-  //   const fileContent = base64Parts[1];
-  //   const file = new File([fileContent], data.name, {
-  //     type: data?.type,
-  //   });
-  //   return file;
-  // }
+  function blobToFile() {
+    const base64 = JSON.parse(localStorage.getItem("formData")).image;
+
+    if (typeof base64 !== "string") return;
+
+    const splitData = base64.split(",");
+    const name = JSON.parse(localStorage.getItem("formData")).imageName;
+    const byteCharacters = atob(splitData[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const type = splitData[0].split(";")[0].split(":")[1];
+
+    const file = new File([byteArray], name, {
+      type,
+    });
+
+    return file;
+  }
+
+  // When image is removed, return an empty file instead of []
+  function emptyFile() {
+    const dataTransfer = new DataTransfer();
+    const emptyFileList = dataTransfer.files;
+    return emptyFileList;
+  }
 
   function onSubmit(data) {
     const categoriesArray = selectedCategories.map((item) => item.id);
+
     createBlog(
       {
         ...data,
@@ -135,9 +198,12 @@ function CreateBlogForm() {
       },
       {
         onSuccess: () => {
-          setModalWindow(true);
+          localStorage.removeItem("formData");
+          localStorage.removeItem("categories");
+          localStorage.removeItem("authErrors");
           reset();
           setSelectedCategories([]);
+          setModalWindow(true);
           setClickedOnce(false);
           setExpanded(false);
         },
@@ -149,10 +215,6 @@ function CreateBlogForm() {
     if (!modalRef?.current?.contains(e.target)) {
       setModalWindow(false);
     }
-  }
-
-  function onError(err) {
-    console.log(err);
   }
 
   return (
@@ -168,7 +230,7 @@ function CreateBlogForm() {
           >
             <div
               onClick={() => {
-                navigate("/");
+                setModalWindow(false);
               }}
               className="ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
             >
@@ -212,12 +274,11 @@ function CreateBlogForm() {
                 [e.target.name]: e.target.value,
               }),
             );
+          } else {
+            handleFileUpload(e.target.files[0]);
           }
-          // else {
-          //   saveFileToLocalStorage(e.target.files[0]);
-          // }
         }}
-        onSubmit={handleSubmit(onSubmit, onError)}
+        onSubmit={handleSubmit(onSubmit)}
         className="ml-[25%] flex w-[41.6%] flex-col gap-10"
       >
         <div>
@@ -242,8 +303,21 @@ function CreateBlogForm() {
               </div>
               <div
                 onClick={() => {
+                  if (localStorage.getItem("formData")) {
+                    const formData = JSON.parse(
+                      localStorage.getItem("formData"),
+                    );
+                    formData.image = emptyFile();
+                    delete formData.imageName;
+                    localStorage.setItem("formData", JSON.stringify(formData));
+                  }
+
                   resetField("image");
-                  trigger("image");
+                  setValue("image", emptyFile());
+                  setError("image", {
+                    type: "required",
+                    message: "სურათი სავალდებულოა",
+                  });
                 }}
                 className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full duration-100 hover:bg-[#F5F4F9]"
               >
@@ -533,15 +607,16 @@ function CreateBlogForm() {
                           const categoryExists = oldCategories.find(
                             (cat) => cat.id === category.id,
                           );
-                          if (!categoryExists)
+                          if (!categoryExists) {
+                            localStorage.setItem(
+                              "categories",
+                              JSON.stringify([...oldCategories, category]),
+                            );
                             return [...oldCategories, category];
+                          }
 
                           return oldCategories;
                         });
-                        localStorage.setItem(
-                          "categories",
-                          JSON.stringify([...selectedCategories, category]),
-                        );
                       }}
                       style={{
                         color: category.text_color,
@@ -586,12 +661,16 @@ function CreateBlogForm() {
         </div>
         <button
           disabled={
-            !isValid || !selectedCategories.length > 0 || categoriesError
+            !isValid ||
+            !selectedCategories.length > 0 ||
+            categoriesError ||
+            Object.keys(errors).length > 0
           }
           className={`ml-auto w-[288px] rounded-lg bg-[#4721DD] px-5 py-2.5 text-white disabled:cursor-not-allowed disabled:bg-[#E4E3EB] ${
             isValid &&
             selectedCategories.length > 0 &&
             !categoriesError &&
+            !Object.keys(errors).length > 0 &&
             "duration-100 hover:brightness-90"
           }`}
           type="submit"

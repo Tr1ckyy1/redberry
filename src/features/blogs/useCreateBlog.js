@@ -2,10 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import { createBlog as createBlogApi } from "../../services/apiBlogs";
 
 function useCreateBlog() {
-  const { mutate: createBlog, isLoading } = useMutation({
+  const { mutate: createBlog } = useMutation({
     mutationFn: createBlogApi,
   });
-  return { createBlog, isLoading };
+  return { createBlog };
 }
 
 export default useCreateBlog;

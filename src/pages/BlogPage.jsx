@@ -15,6 +15,8 @@ function BlogPage() {
   const { blog, isLoading } = useBlog();
   const { blogs } = useBlogs();
 
+  const currentDate = new Date();
+
   // Extract categories from the current blog
   const categories = blog?.categories.map((category) => category.title);
   // Filter blogs that have at least one category in common with the current blog
@@ -24,7 +26,11 @@ function BlogPage() {
         categories?.includes(category.title),
       ),
     )
-    .filter((similarBlog) => similarBlog.id !== blog.id);
+    .filter((similarBlog) => similarBlog.id !== blog.id)
+    .filter((blog) => {
+      const publishDate = new Date(blog.publish_date);
+      return publishDate <= currentDate;
+    });
 
   function slideRight() {
     if (startIndex + BLOGS_PER_PAGE < similarBlogs.length) {
@@ -86,7 +92,7 @@ function BlogPage() {
             {similarBlogs
               ?.slice(startIndex, startIndex + BLOGS_PER_PAGE)
               .map((similarBlog) => (
-                <div key={similarBlog.id} className="w-full space-y-2">
+                <div key={similarBlog.id} className="w-1/3 space-y-2">
                   <h1 className="w-full flex-grow">{similarBlog.title}</h1>
                   <img
                     src={similarBlog.image}

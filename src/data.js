@@ -1,3 +1,3 @@
 export const TOKEN =
-  "9231c77b67ecabad8c512d18ce324d28859e5f1e43d3e6a0b26e3affa927fc66";
+  "16173b768c4e96d5fd0bcede710273743d388e448b62688933915baabfec8550";
 export const API = "https://api.blog.redberryinternship.ge/api";
