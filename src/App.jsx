@@ -11,6 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import CreateBlog from "./pages/CreateBlog";
 import ProtectedRoutes from "./ui/ProtectedRoutes";
 import BlogPage from "./pages/BlogPage";
+import Error from "./ui/Error";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,10 +26,10 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<AppLayout />}>
-        <Route index element={<Dashboard />} />
+        <Route errorElement={<Error />} index element={<Dashboard />} />
         <Route
           path="blogs/:blogId"
-          errorElement={<h1>There are no blogs created currently</h1>}
+          errorElement={<Error />}
           element={<BlogPage />}
         />
       </Route>
@@ -39,6 +41,7 @@ const router = createBrowserRouter(
           </ProtectedRoutes>
         }
       />
+      <Route path="*" element={<NotFoundPage />} />
     </>,
   ),
 );

@@ -16,7 +16,7 @@ import add from "../../../public/add.png";
 
 const MAX_NUM_CHARACTERS = 50;
 
-function CreateBlogForm({goBack,navigate}) {
+function CreateBlogForm({ goBack, navigate }) {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [modalWindow, setModalWindow] = useState(false);
   const [categoriesError, setCategoriesError] = useState("");
@@ -56,7 +56,6 @@ function CreateBlogForm({goBack,navigate}) {
   });
 
   const { categories } = useCategories();
-
 
   const imageRef = useRef(null);
   const categoriesAddedRef = useRef(null);
@@ -282,7 +281,7 @@ function CreateBlogForm({goBack,navigate}) {
                 [e.target.name]: e.target.value,
               }),
             );
-          } else {
+          } else if (e.target.files[0].type.startsWith("image")) {
             handleFileUpload(e.target.files[0]);
           }
         }}
@@ -560,9 +559,10 @@ function CreateBlogForm({goBack,navigate}) {
               }`}
             >
               {selectedCategories.length > 0 ? (
-                <div className="flex gap-1 overflow-x-scroll  scrollbar-none">
+                <div className="flex gap-2 overflow-x-scroll  scrollbar-none">
                   {selectedCategories.map((cat) => (
                     <div
+                      onClick={(e) => (categoriesAddedRef.current = e.target)}
                       ref={categoriesAddedRef}
                       key={cat.title}
                       style={{

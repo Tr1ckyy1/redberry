@@ -20,24 +20,36 @@ function BlogsData() {
     }
   });
 
-  const blogsToRender =
-    categoriesMap.size > 0
-      ? blogs
-          ?.filter((blog) =>
-            blog.categories.some(
-              (category) =>
-                categoriesMap.has(category.id.toString()) &&
-                category.title.replaceAll(" ", "") ===
-                  categoriesMap.get(category.id.toString()),
-            ),
-          )
-          .filter((blog) => {
-            const publishDate = new Date(blog.publish_date);
-            return publishDate <= currentDate;
-          })
-      : // CHECK DATES ON FILTERED AND EVERY BLOG
+  // better filtering - no forEach needed, no new map needed
+  const filteredData = blogs?.filter((item) =>
+    item.categories.some(
+      (cat) =>
+        cat.title.replaceAll(" ", "") === searchParams.get(`id${cat.id}`),
+    ),
+  );
+  // categoriesMap.size > 0
+  //   ? blogs
+  //       ?.filter((blog) =>
+  //         blog.categories.some(
+  //           (category) =>
+  //             categoriesMap.has(category.id.toString()) &&
+  //             category.title.replaceAll(" ", "") ===
+  //               categoriesMap.get(category.id.toString()),
+  //         ),
+  //       )
+  //       .filter((blog) => {
+  //         const publishDate = new Date(blog.publish_date);
+  //         return publishDate <= currentDate;
+  //       })
+  //   : // CHECK DATES ON FILTERED AND EVERY BLOG
 
-        blogs?.filter((blog) => {
+  const blogsToRender =
+    filteredData?.length > 0
+      ? filteredData.filter((blog) => {
+          const publishDate = new Date(blog.publish_date);
+          return publishDate <= currentDate;
+        })
+      : blogs?.filter((blog) => {
           const publishDate = new Date(blog.publish_date);
           return publishDate <= currentDate;
         });

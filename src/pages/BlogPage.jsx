@@ -94,7 +94,6 @@ function BlogPage() {
               ?.slice(startIndex, startIndex + BLOGS_PER_PAGE)
               .map((similarBlog) => (
                 <div key={similarBlog.id} className="w-1/3 space-y-2">
-                  <h1 className="w-full flex-grow">{similarBlog.title}</h1>
                   <img
                     src={similarBlog.image}
                     className="h-[328px] w-full rounded-xl object-cover"
