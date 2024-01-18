@@ -8,26 +8,19 @@ function BlogsData() {
   const [searchParams] = useSearchParams();
 
   // Create a map to store category IDs and titles
-  const categoriesMap = new Map();
 
   const currentDate = new Date();
 
+  // const categoriesMap = new Map();
   // Assuming the parameters are like "id1=category1&id2=category2"
-  searchParams.forEach((value, key) => {
-    if (key.startsWith("id")) {
-      const categoryId = key.substring(2); // Extract category ID from parameter key
-      categoriesMap.set(categoryId, value);
-    }
-  });
+  // searchParams.forEach((value, key) => {
+  //   if (key.startsWith("id")) {
+  //     const categoryId = key.substring(2); // Extract category ID from parameter key
+  //     categoriesMap.set(categoryId, value);
+  //   }
+  // });
 
-  // better filtering - no forEach needed, no new map needed
-  const filteredData = blogs?.filter((item) =>
-    item.categories.some(
-      (cat) =>
-        cat.title.replaceAll(" ", "") === searchParams.get(`id${cat.id}`),
-    ),
-  );
-  // categoriesMap.size > 0
+  // const blogsToRender = categoriesMap.size > 0
   //   ? blogs
   //       ?.filter((blog) =>
   //         blog.categories.some(
@@ -41,7 +34,15 @@ function BlogsData() {
   //         const publishDate = new Date(blog.publish_date);
   //         return publishDate <= currentDate;
   //       })
-  //   : // CHECK DATES ON FILTERED AND EVERY BLOG
+  //
+
+  // better filtering - no forEach needed, no new map needed
+  const filteredData = blogs?.filter((item) =>
+    item.categories.some(
+      (cat) =>
+        cat.title.replaceAll(" ", "") === searchParams.get(`id${cat.id}`),
+    ),
+  );
 
   const blogsToRender =
     filteredData?.length > 0
@@ -49,7 +50,8 @@ function BlogsData() {
           const publishDate = new Date(blog.publish_date);
           return publishDate <= currentDate;
         })
-      : blogs?.filter((blog) => {
+      : // CHECK DATES ON FILTERED AND EVERY BLOG
+        blogs?.filter((blog) => {
           const publishDate = new Date(blog.publish_date);
           return publishDate <= currentDate;
         });
