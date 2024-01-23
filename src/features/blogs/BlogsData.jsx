@@ -7,10 +7,9 @@ function BlogsData() {
   const { blogs, isLoading } = useBlogs();
   const [searchParams] = useSearchParams();
 
-  // Create a map to store category IDs and titles
-
   const currentDate = new Date();
 
+  // Create a map to store category IDs and titles
   // const categoriesMap = new Map();
   // Assuming the parameters are like "id1=category1&id2=category2"
   // searchParams.forEach((value, key) => {
