@@ -9,7 +9,7 @@ function BlogsRow({
   const MAX_NUM_OF_CHARACTERS = 80;
   return (
     <div className="space-y-4">
-      <img src={image} className="h-[328px] w-full rounded-xl object-cover" />
+      <img src={image} className="object-fit h-[328px] w-full rounded-xl" />
       <div className="space-y-1 text-sm">
         <p className="font-bold">{author}</p>
         <p className="text-[#85858D]">{publish_date.replaceAll("-", ".")}</p>

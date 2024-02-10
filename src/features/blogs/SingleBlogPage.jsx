@@ -17,7 +17,7 @@ function SingleBlogPage({
 
   return (
     <div className="space-y-7">
-      <img src={image} className="h-[328px] w-full rounded-xl object-cover" />
+      <img src={image} className="h-[328px] w-full rounded-xl" />
       <div className="space-y-1">
         <h1 className="font-bold">{author}</h1>
         <div className="flex items-center text-sm text-[#85858D]">
