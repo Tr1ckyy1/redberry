@@ -95,6 +95,7 @@ function Login({ closeModal }) {
                       message: "უნდა მთავრდებოდეს @redberry.ge-თ",
                     },
                   })}
+                  defaultValue="gigagiorgadze@redberry.ge"
                   id="email"
                   type="text"
                   placeholder="Example@redberry.ge"
